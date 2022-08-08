@@ -6,8 +6,10 @@ Created on Mon Aug  8 11:05:19 2022
 """
 import datetime
 import pandas as pd
+import os 
 
-def row(contents: str):
+
+def extract_rows(contents: str):
     result = []
     
     date = contents[:8]
@@ -39,9 +41,9 @@ def row(contents: str):
     return (result)
 
 
-def KyotoData(infile:str = "Database/PlanetaryIndicators/", 
-              filename: str = "Kp.txt", 
-              year: int = 2014) -> pd.DataFrame:
+def KpAp_indices_KyotoData(infile:str, 
+                           filename: str, 
+                           year: int = 2014) -> pd.DataFrame:
 
     with open(infile + filename) as f:
         data = [line.strip() for line in f.readlines()]
@@ -51,22 +53,21 @@ def KyotoData(infile:str = "Database/PlanetaryIndicators/",
     for num in range(1, len(data)):
         contents = data[num]
     
-        outside.append(row(contents))
+        outside.append(extract_rows(contents))
         
     
     names = ["date", 'kp0', 'kp3', 
-                 'kp6', 'kp9', 'kp12', 
-                 'kp15', 'kp18', 'kp21',
-                 'kpsum', 'ap3', 'ap6', 
-                 'ap9', 'ap12', 'ap15', 
-                 'ap18', 'ap21', 'ap24', "Ap"]
+            'kp6', 'kp9', 'kp12', 
+            'kp15', 'kp18', 'kp21',
+            'kpsum', 'ap3', 'ap6', 
+            'ap9', 'ap12', 'ap15', 
+            'ap18', 'ap21', 'ap24', "Ap"]
     
     df = pd.DataFrame(outside, columns = names)
     
     df.index = pd.to_datetime(df["date"])
     
-    df = df.loc[df.index.year == year, :]
-    return df
+    return df.loc[df.index.year == year, :]
 
 
 def OMNI2Data(infile: str, 
@@ -86,7 +87,6 @@ def OMNI2Data(infile: str,
     
     
     df["kp"] = df["kp"] / 10
-    dates = []
     
     def doy_to_date(y: int, d:int) -> datetime.date:
         
@@ -119,3 +119,54 @@ def postdamData(infile:str,
                                     day = df['DD']))
     
     return df.loc[(df["#YYY"]  == year), [parameter]]
+
+
+infile = "Database/ASY-SYM/"
+
+
+
+
+
+def SYM_ASY_Data(infile: str, 
+                 filename: str, 
+                 frequecy = "1D"):
+    
+    '''IAGA-2002 format like'''
+    
+    df = pd.read_csv(infile + filename, 
+                     header = 14, 
+                     delim_whitespace = True)
+    
+    df.index = pd.to_datetime(df["DATE"] + " " + df["TIME"])
+    
+    df = df.loc[:, ["ASY-D", "ASY-H", 
+                    "SYM-D", "SYM-H"]]
+    
+    df = df.resample("1D").asfreq()
+    
+    return df
+
+def concat_files(infile: str, 
+                 save = True) -> pd.DataFrame:
+    
+    _, _, files  = next(os.walk(infile))
+
+    out = []
+    for filename in files:
+        
+        out.append(SYM_ASY_Data(infile, 
+                                filename))
+    
+    df = pd.concat(out)
+    
+    if save:
+        df.to_csv("Database/asy_sym.txt", 
+                      index = True, 
+                      sep = " ")
+        
+    else:
+        return df
+    
+df = concat_files(infile, save = True)
+
+print(df)
