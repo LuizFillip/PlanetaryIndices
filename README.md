@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Mon Aug  8 15:35:03 2022
-
-@author: Luiz
-"""
-
 # Geomagnetic indices
 
 
