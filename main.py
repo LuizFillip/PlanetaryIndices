@@ -109,7 +109,7 @@ def postdamData(infile:str,
                 parameter:str = "Ap", 
                 year:int = 2014):
     
-    
+    """Read data from """
     df = pd.read_csv(infile + filename, 
                      header = 39, delim_whitespace=(True))
     
@@ -121,15 +121,11 @@ def postdamData(infile:str,
     return df.loc[(df["#YYY"]  == year), [parameter]]
 
 
-infile = "Database/ASY-SYM/"
-
-
-
 
 
 def SYM_ASY_Data(infile: str, 
                  filename: str, 
-                 frequecy = "1D"):
+                 frequency = "1D"):
     
     '''IAGA-2002 format like'''
     
@@ -137,12 +133,13 @@ def SYM_ASY_Data(infile: str,
                      header = 14, 
                      delim_whitespace = True)
     
-    df.index = pd.to_datetime(df["DATE"] + " " + df["TIME"])
+    df.index = pd.to_datetime(df["DATE"] + " " + 
+                              df["TIME"])
     
     df = df.loc[:, ["ASY-D", "ASY-H", 
                     "SYM-D", "SYM-H"]]
     
-    df = df.resample("1D").asfreq()
+    df = df.resample(frequency).asfreq()
     
     return df
 
@@ -166,7 +163,12 @@ def concat_files(infile: str,
         
     else:
         return df
-    
-df = concat_files(infile, save = True)
 
-print(df)
+def main():
+    infile = "Database/ASY/"
+    
+    df = concat_files(infile, save = True)
+    
+    
+    
+#main()
