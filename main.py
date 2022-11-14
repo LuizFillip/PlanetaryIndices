@@ -1,9 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Mon Aug  8 11:05:19 2022
-
-@author: Luiz
-"""
 import datetime
 import pandas as pd
 import os 
@@ -71,16 +65,16 @@ def KpAp_indices_KyotoData(infile:str,
 
 
 def OMNI2Data(infile: str, 
-              filename: str,
               year: int = 2014, 
               parameter:str = "dst") -> pd.DataFrame:
     
     
-    names =  ["year", "doy", "hour", "kp", 
+    names =  ["year", "doy", "hour", 
+              "B", "kp", 
               "dst", "ap", "f107", 
               "ae", "al", "au"]
     
-    df = pd.read_csv(infile + filename, 
+    df = pd.read_csv(infile, 
                      header = None, 
                      names = names, 
                      delim_whitespace = True)
@@ -104,23 +98,31 @@ def OMNI2Data(infile: str,
 
 
 
-def postdamData(infile:str, 
-                filename:str, 
-                parameter:str = "Ap", 
-                year:int = 2014):
+def postdamData(infile: str, 
+                year: int = 2014):
     
     """Read data from """
-    df = pd.read_csv(infile + filename, 
-                     header = 39, delim_whitespace=(True))
+    df = pd.read_csv(infile, 
+                     header = 39, 
+                     delim_whitespace = True)
     
     
     df.index  = pd.to_datetime(dict(year = df['#YYY'], 
                                     month = df['MM'], 
                                     day = df['DD']))
     
-    return df.loc[(df["#YYY"]  == year), [parameter]]
+    df = df.drop(columns = ["#YYY", "MM", "DD", 
+                            "days", "days_m", 
+                            "Bsr", "dB"])
+    
+    return df.loc[(df.index.year == year)]
+ 
+
+df = postdamData(infile = "database/postdam.txt",
+            year = 2014)
 
 
+print(df)
 
 
 def SYM_ASY_Data(infile: str, 
@@ -165,10 +167,12 @@ def concat_files(infile: str,
         return df
 
 def main():
-    infile = "Database/ASY/"
+   
     
-    df = concat_files(infile, save = True)
+    infile = "database/omni.txt"   
+    df = OMNI2Data(infile)
     
-    
-    
-#main()
+
+
+
+    print(df)
