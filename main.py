@@ -35,11 +35,10 @@ def extract_rows(contents: str):
     return (result)
 
 
-def KpAp_indices_KyotoData(infile:str, 
-                           filename: str, 
+def KpAp_KyotoData(infile:str, 
                            year: int = 2014) -> pd.DataFrame:
 
-    with open(infile + filename) as f:
+    with open(infile) as f:
         data = [line.strip() for line in f.readlines()]
         
     outside = []
@@ -115,23 +114,22 @@ def postdamData(infile: str,
                             "days", "days_m", 
                             "Bsr", "dB"])
     
-    return df.loc[(df.index.year == year)]
+    df["F10.7a"] = df["F10.7obs"].rolling(window = 81).mean()
+    
+    return #df.loc[(df.index.year == year)]
  
 
 df = postdamData(infile = "database/postdam.txt",
             year = 2014)
 
 
-print(df)
-
 
 def SYM_ASY_Data(infile: str, 
-                 filename: str, 
                  frequency = "1D"):
     
     '''IAGA-2002 format like'''
     
-    df = pd.read_csv(infile + filename, 
+    df = pd.read_csv(infile, 
                      header = 14, 
                      delim_whitespace = True)
     
