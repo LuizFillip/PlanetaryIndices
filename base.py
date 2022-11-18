@@ -97,10 +97,9 @@ def OMNI2Data(infile: str,
 
 
 
-def postdamData(infile: str, 
-                year: int = 2014):
+def postdamData(infile: str):
     
-    """Read data from """
+    """Read data from GFZ postdam"""
     df = pd.read_csv(infile, 
                      header = 39, 
                      delim_whitespace = True)
@@ -116,13 +115,8 @@ def postdamData(infile: str,
     
     df["F10.7a"] = df["F10.7obs"].rolling(window = 81).mean()
     
-    return #df.loc[(df.index.year == year)]
+    return df.loc[df["D"] == 2] 
  
-
-df = postdamData(infile = "database/postdam.txt",
-            year = 2014)
-
-
 
 def SYM_ASY_Data(infile: str, 
                  frequency = "1D"):
@@ -143,6 +137,17 @@ def SYM_ASY_Data(infile: str,
     
     return df
 
+
+def read_sym_asy(year = 2014):
+    
+    df = pd.read_csv("database/asy_sym.txt", 
+                     delim_whitespace= True)
+    
+    
+    df.index = pd.to_datetime(df.index)
+    
+    return df.loc[df.index.year == year, :]   
+
 def concat_files(infile: str, 
                  save = True) -> pd.DataFrame:
     
@@ -157,7 +162,7 @@ def concat_files(infile: str,
     df = pd.concat(out)
     
     if save:
-        df.to_csv("Database/asy_sym.txt", 
+        df.to_csv("database/asy_sym.txt", 
                       index = True, 
                       sep = " ")
         
@@ -170,7 +175,14 @@ def main():
     infile = "database/omni.txt"   
     df = OMNI2Data(infile)
     
+    
+    df = postdamData(infile = "database/postdam.txt",
+                year = 2014)
+    
+    
+    df = df.loc[(df.index.year >= 1970) & 
+                (df.index.year <= 2020)]
+    
+    print(df.loc[df["F10.7obs"] == 0])
 
 
-
-    print(df)

@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from base import postdamData, OMNI2Data
 import plotConfig 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 def change_axes_color(ax, p,
@@ -22,7 +22,9 @@ def change_axes_color(ax, p,
 
 
 
-def plotSolarflux(ax, ystart = 1990, yend = 2019):
+def plotSolarflux(ax, 
+                  ystart = 1990, yend = 2019, 
+                  yshade = 2014):
     sflux = postdamData(infile= "database/postdam.txt")
     
     sflux = sflux.loc[(sflux.index.year > ystart) & 
@@ -33,13 +35,14 @@ def plotSolarflux(ax, ystart = 1990, yend = 2019):
     
     ax.plot(sflux["F10.7obs"], lw = 0.8, color = "k")
     
-    ax.set(ylabel = "$_{F10,7} $cm", 
+    ax.set(ylabel = "$_{F10,7} $ cm", 
            yticks = np.arange(100, 450, 100), 
            xlabel = "Anos")
-
-    ax.axvspan(datetime(2014, 1, 1), 
-               datetime(2015,1, 1),
-               alpha = 0.5, color = "gray")
+    if yshade:
+        date = datetime(yshade, 1, 1)
+        ax.axvspan(date, 
+                   date + timedelta(days = 366),
+                   alpha = 0.5, color = "gray")
     
 def dateFormating(ax):
     import matplotlib.dates as dates
@@ -54,6 +57,7 @@ def plotDisturbanceIndex(ax, df,
         
     if col == "dst":
         ax.plot(df[col], lw = 1.5, color = "k")
+        ax.axhline(0, linestyle = "--", color = "k")
     else:
         y = df[col].values
         x = df.index.values 
@@ -94,33 +98,39 @@ def plotAuroralIndex(ax, df,
     
 def plotIndices(save = False):
     
-    fig, ax = plt.subplots(figsize = (20, 25), 
-                           nrows = 4)
     
+    fig = plt.figure(figsize = (20, 18))
     
-    plt.subplots_adjust(hspace = 0.3)
     
     
     df = OMNI2Data(infile = "database/omni.txt",
               year = 2014, 
               parameter = None)
     
-   
     
-    plotSolarflux(ax[0])
     
-    plotDisturbanceIndex(ax[1], df)
+    gs = fig.add_gridspec(1, bottom = 0.98, top = 1.2)
+    ax1 =  gs.subplots()
+    plotSolarflux(ax1)
+
+
+    gs = fig.add_gridspec(3, hspace=0, wspace=0)
+    (ax2, ax3, ax4) = gs.subplots(sharex='col')
     
-    plotDisturbanceIndex(ax[2], df, 
+    
+    
+    plotDisturbanceIndex(ax2, df)
+    
+    plotDisturbanceIndex( ax3, df, 
                          col = "kp", 
                          label = "Índice Kp", 
                          ylim = [0, 9], 
                          yticks = np.arange(0, 10, 2))
      
-    plotAuroralIndex(ax[3], df)
+    plotAuroralIndex( ax4, df)
     
     
-    ax[3].set(xlabel = "Meses")
+    ax4.set(xlabel = "Meses")
 
     plt.show()
     
