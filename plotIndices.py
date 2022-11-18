@@ -1,26 +1,10 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Aug  4 11:45:16 2022
-
-@author: Luiz
-"""
-
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-import datetime
-from main import *
+from base import postdamData, OMNI2Data
+import plotConfig 
+from datetime import datetime
 
-def postdamPlot(ax):
-    ax.plot(df, lw = 1, color = "gray")
-    
-    ax.set(ylabel = "Ap index", xlabel = "Months")
-    
-    ax.axhline(22, color = "k", 
-               linestyle = "--", label = "Ap = 22 (kp = 4)")
-    
-    ax.legend(loc = "upper right")
-    
 
 def change_axes_color(ax, p,
                       axis = "y", 
@@ -35,110 +19,112 @@ def change_axes_color(ax, p,
     
     ax.spines['right'].set_color(p.get_color())
     
-def read_sym_asy(year = 2014):
+
+
+
+def plotSolarflux(ax, ystart = 1990, yend = 2019):
+    sflux = postdamData(infile= "database/postdam.txt")
     
-    df = pd.read_csv("Database/asy_sym.txt", 
-                     delim_whitespace= True)
+    sflux = sflux.loc[(sflux.index.year > ystart) & 
+                      (sflux.index.year < yend) & 
+                      (sflux["F10.7obs"] > 10) & 
+                      (sflux["F10.7obs"] < 500)]
     
     
-    df.index = pd.to_datetime(df.index)
+    ax.plot(sflux["F10.7obs"], lw = 0.8, color = "k")
     
-    return df.loc[df.index.year == year, :]   
+    ax.set(ylabel = "$_{F10,7} $cm", 
+           yticks = np.arange(100, 450, 100), 
+           xlabel = "Anos")
 
-
-
-
-
+    ax.axvspan(datetime(2014, 1, 1), 
+               datetime(2015,1, 1),
+               alpha = 0.5, color = "gray")
+    
+def dateFormating(ax):
+    import matplotlib.dates as dates
+    ax.xaxis.set_major_formatter(dates.DateFormatter('%b'))
+    ax.xaxis.set_major_locator(dates.MonthLocator(interval = 1))
+    
+def plotDisturbanceIndex(ax, df, 
+                         col = "dst", 
+                         label = "Dst (nT)", 
+                         ylim = [-100, 50], 
+                         yticks = np.arange(-150, 50, 50)):
+        
+    if col == "dst":
+        ax.plot(df[col], lw = 1.5, color = "k")
+    else:
+        y = df[col].values
+        x = df.index.values 
+        ax.bar(x, y, width = 1, color = "k")
+        
+    ax.set(ylabel = label, 
+           ylim = ylim, 
+           yticks = yticks)
+    
+    dateFormating(ax)
+    
+def plotAuroralIndex(ax, df, 
+                     ylim = [-500, 500], 
+                     step = 200):
+    
+    kwargs = dict(lw = 2)
+    
+    ax.plot(df['ae'], lw = 2, color = "k")
+    
+    ax1 = ax.twinx()
+    
+    p1, = ax1.plot(df["al"], **kwargs)
+    
+    change_axes_color(ax1, p1)
+    
+    ax.axhline(0, **kwargs, linestyle = "--", color = "k")
+    yticks =  np.arange(ylim[0], ylim[-1] + step, step)
+                        
+    ax1.set(ylabel = "AL (nT)", 
+            ylim = ylim, 
+            yticks = yticks)
+    
+    ax.set(ylabel = "AE (nT)", 
+            ylim = ylim, 
+            yticks = yticks)
+    
+    dateFormating(ax)
+    
 def plotIndices(save = False):
     
-    fig, ax = plt.subplots(figsize = (8, 10), 
-                           nrows = 4, 
-                           sharex = True)
+    fig, ax = plt.subplots(figsize = (20, 25), 
+                           nrows = 4)
     
     
-    plt.subplots_adjust(hspace = 0.0)
+    plt.subplots_adjust(hspace = 0.3)
     
     
-    df = OMNI2Data(infile = "Database/", 
-              filename = "OMNI2.txt",
+    df = OMNI2Data(infile = "database/omni.txt",
               year = 2014, 
               parameter = None)
     
-    # =============================================================================
-    # Dst index
-    # =============================================================================
+   
     
-    kwargs = dict(lw = 0.8, 
-                 color = "k")
+    plotSolarflux(ax[0])
     
+    plotDisturbanceIndex(ax[1], df)
     
-    df["dst"].plot(ax = ax[0], **kwargs)
-    
-    ax[0].set(ylabel = "Dst (nT)", ylim = [-100, 50])
-    
-    
-    # =============================================================================
-    # Kp index
-    # =============================================================================
-    df["kp"].plot(ax = ax[1], **kwargs)
+    plotDisturbanceIndex(ax[2], df, 
+                         col = "kp", 
+                         label = "Índice Kp", 
+                         ylim = [0, 9], 
+                         yticks = np.arange(0, 10, 2))
+     
+    plotAuroralIndex(ax[3], df)
     
     
-    ax[1].set(ylabel = "Kp index", 
-              ylim = [0, 9])
-    
-    
-    df['ae'].plot(ax = ax[2], color = "k",
-                          legend = False)
-    
-    ax1 = ax[2].twinx()
-    
-    p1, = ax1.plot(df["al"], color = '#0C5DA5')
-    
-    # =============================================================================
-    #     Auroral Electrijet Activity
-    # =============================================================================
-        
-    change_axes_color(ax1, p1)
-    
-    ax1.set(ylabel = "AL (nT)", ylim = [-400, 700])
-    
-    ax[2].set(ylim = [-400, 700], ylabel = "AE (nT)")
-    
-    
-    # =============================================================================
-    #     Symmetric and Assymmetric H
-    # =============================================================================
-        
-    df = read_sym_asy(year = 2014)
-    
-    
-    df["SYM-D"].plot(ax = ax[3], color = "k")
-    
-    
-    ax2 = ax[3].twinx()
-    p2, = ax2.plot(df["SYM-H"], color = '#0C5DA5')
-    
-    
-    change_axes_color(ax2, p2)
-    
-    
-    ax2.set(ylim = [-70, 70], ylabel = "SYM-H", 
-            xlabel = "Months")
-    ax[3].set(ylim = [-70, 70], ylabel = "SYM-D", 
-              xlabel = "Months")
-    
-    # =============================================================================
-    #     Reference lines
-    # =============================================================================
-    
-    for ax in [ax1, ax2, ax[0]]:
-        ax.axhline(0, linestyle = "--", color = "k")
-        
-    if save:
-        plt.savefig(f"img/all_indices.png", 
-                    dpi = 100, bbox_inches="tight")
-        
+    ax[3].set(xlabel = "Meses")
+
     plt.show()
     
-plotIndices(save = True)
+    return fig
+    
+plotIndices(save = False)
     
