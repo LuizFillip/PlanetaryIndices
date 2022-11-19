@@ -2,12 +2,14 @@ import locale
 import matplotlib.pyplot as plt
 import matplotlib.dates as dates
 import numpy as np
-
+import os
 locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
 
+latex = "G:\\My Drive\\Doutorado\\Modelos_Latex_INPE\\docs\\Proposal\\Figures\\"
+def path_tex(folder):
+    
+    return os.path.join(latex, folder)
 
-path_tex = {"latex" : 
-         "G:\\My Drive\\Doutorado\\Modelos_Latex_INPE\\docs\\Proposal\\Figures\\methods\\"}
 fontsize = 35
 
 lw = 1
@@ -46,7 +48,7 @@ def change_axes_color(ax, p,
                       axis = "y", 
                       position = "right"
                       ):
-    
+    """Change color from the other side"""
     ax.yaxis.label.set_color(p.get_color())
     
     ax.yaxis.label.set_color(p.get_color())
