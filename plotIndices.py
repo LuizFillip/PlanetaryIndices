@@ -23,11 +23,16 @@ def plotSolarflux(ax,
     ax.set(ylabel = "$_{F10,7} $ cm", 
            yticks = np.arange(100, 450, 100), 
            xlabel = "Anos")
+    
     if yshade:
         date = datetime(yshade, 1, 1)
+        end = date + timedelta(days = 366)
         ax.axvspan(date, 
-                   date + timedelta(days = 366),
+                   end,
                    alpha = 0.5, color = "gray")
+        
+        ax.text(end, 350, yshade, 
+                transform = ax.transData)
     
 
     
@@ -47,7 +52,6 @@ def plotDisturbanceIndex(ax, df,
         x = df.index.values 
         ax.bar(x, y, width = 1, color = "k")
     
-    #step = int((ylim[-1] - ylim[0]) / 4)
     yticks = np.arange(ylim[0], ylim[-1] + step, step)
         
     ax.set(ylabel = label, 
@@ -60,18 +64,19 @@ def plotAuroralIndex(ax, df,
                      ylim = [-500, 500], 
                      step = 200):
     
-    kwargs = dict(lw = 2)
+    """Plotting auroral indexes"""
+    
     
     ax.plot(df['ae'], lw = 2, color = "k")
     
     ax1 = ax.twinx()
     
-    p1, = ax1.plot(df["al"], **kwargs)
+    p1, = ax1.plot(df["al"], lw = 2,)
     
     p.change_axes_color(ax1, p1)
     
-    ax.axhline(0, **kwargs, 
-               linestyle = "--", color = "k")
+    ax.axhline(0, lw = 2, linestyle = "--", 
+               color = "k")
     
     
     yticks =  np.arange(ylim[0], 
@@ -105,7 +110,7 @@ def plotIndices():
     
     plotDisturbanceIndex(ax2, df)
     
-    plotDisturbanceIndex( ax3, df, 
+    plotDisturbanceIndex(ax3, df, 
                          col = "kp", 
                          label = "Índice Kp", 
                          ylim = [0, 9], 
@@ -122,5 +127,7 @@ def plotIndices():
     
     return fig
     
-plotIndices()
+fig = plotIndices()
     
+fig.savefig(p.path_tex("results") + "\\PlanetaryIndices.png", 
+            dpi = 300)
