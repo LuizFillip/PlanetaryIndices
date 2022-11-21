@@ -5,7 +5,7 @@ import plotConfig as p
 from datetime import datetime, timedelta
 
 def plotSolarflux(ax, 
-                  years = [1990, 2020], 
+                  years = [1996, 2020], 
                   yshade = 2014):
     
     """Plotting Solar flux F10.7 cm"""
@@ -44,12 +44,15 @@ def plotDisturbanceIndex(ax, df,
     
     """Plotting Disturbance Storm and Kp indexes"""
     
+    args = dict(linestyle = "--", color = "k", lw = 3)
+    
     if col == "dst":
-        ax.plot(df[col], lw = 1.5, color = "k")
-        ax.axhline(0, linestyle = "--", color = "k")
+        ax.plot(df[col], lw = 3, color = "k")
+        ax.axhline(0, **args)
     else:
         y = df[col].values
         x = df.index.values 
+        ax.axhline(3, **args)
         ax.bar(x, y, width = 1, color = "k")
     
     yticks = np.arange(ylim[0], ylim[-1] + step, step)
@@ -103,7 +106,7 @@ def plotIndices():
 
 
     gs = fig.add_gridspec(3, hspace = 0.1)
-    (ax2, ax3, ax4) = gs.subplots(sharex='col')
+    (ax2, ax3, ax4) = gs.subplots(sharex = 'col')
     
     df = OMNI2Data(infile = "database/omni.txt",
                    year = 2014, parameter = None)
