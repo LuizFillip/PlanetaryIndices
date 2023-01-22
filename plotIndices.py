@@ -1,8 +1,17 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from base import postdamData, OMNI2Data
-import plotConfig as p
+import setup as s
 from datetime import datetime, timedelta
+import matplotlib.dates as dates
+
+
+def dateFormating(ax):
+    
+    ax.xaxis.set_major_formatter(dates.DateFormatter('%b'))
+    ax.xaxis.set_major_locator(dates.MonthLocator(interval = 1))
+    
+
 
 def plotSolarflux(ax, 
                   years = [1996, 2020], 
@@ -44,10 +53,10 @@ def plotDisturbanceIndex(ax, df,
     
     """Plotting Disturbance Storm and Kp indexes"""
     
-    args = dict(linestyle = "--", color = "k", lw = 3)
+    args = dict(linestyle = "--", color = "k", lw = 1)
     
     if col == "dst":
-        ax.plot(df[col], lw = 3, color = "k")
+        ax.plot(df[col], lw = 1, color = "k")
         ax.axhline(0, **args)
     else:
         y = df[col].values
@@ -61,7 +70,7 @@ def plotDisturbanceIndex(ax, df,
            ylim = ylim, 
            yticks = yticks)
     
-    p.dateFormating(ax)
+    dateFormating(ax)
     
 def plotAuroralIndex(ax, df, 
                      ylim = [-500, 500], 
@@ -69,17 +78,18 @@ def plotAuroralIndex(ax, df,
     
     """Plotting auroral indexes"""
     
+    args = dict(lw = 1)
     
-    ax.plot(df['ae'], lw = 2, color = "k")
+    ax.plot(df['ae'], color = "k", **args)
     
     ax1 = ax.twinx()
     
-    p1, = ax1.plot(df["al"], lw = 2,)
+    p1, = ax1.plot(df["al"], **args)
     
-    p.change_axes_color(ax1, p1)
+    s.change_axes_color(ax1, p1)
     
-    ax.axhline(0, lw = 2, linestyle = "--", 
-               color = "k")
+    ax.axhline(0, linestyle = "--", 
+               color = "k", **args)
     
     
     yticks =  np.arange(ylim[0], 
@@ -93,12 +103,14 @@ def plotAuroralIndex(ax, df,
             ylim = ylim, 
             yticks = yticks)
     
-    p.dateFormating(ax)
+    dateFormating(ax)
     
 def plotIndices():
     
     
-    fig = plt.figure(figsize = (20, 18))
+    fig = plt.figure(figsize = (8, 6))
+    
+    s.config_labels()
     
     gs = fig.add_gridspec(1, bottom = 0.98, top = 1.2)
     ax1 =  gs.subplots()
@@ -123,8 +135,8 @@ def plotIndices():
     
     ax4.set(xlabel = "Meses")
     
-    p.text_painels([ax1, ax2, 
-                    ax3, ax4], x = 0.01, y = 0.85)
+    s.text_painels([ax1, ax2, ax3, ax4], 
+                   x = 0.01, y = 0.85)
 
     plt.show()
     
@@ -132,5 +144,4 @@ def plotIndices():
     
 fig = plotIndices()
     
-fig.savefig(p.path_tex("results") + "\\PlanetaryIndices.png", 
-            dpi = 300)
+fig.savefig("img/PlanetaryIndices.png")

@@ -53,10 +53,3 @@ geomagnetic latitude. The label 'K' comes from the German word 'Kennziffer' mean
 ## Plotting
 
 [See the code](https://github.com/LuizFillip/Geomagnetic-Solar-Indices/blob/main/plotIndices.py)
-
-```
-plotIndices(save = False)
-```
-
-
-![cover image](img/all_indices.png)
