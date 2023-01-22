@@ -88,10 +88,11 @@ def OMNI2Data(infile: str,
     
     year_and_doy = zip(df.year.values, df.doy.values)
   
-    df.index = [doy_to_date(y, d) for y, d in year_and_doy]
+    df.index = pd.to_datetime([doy_to_date(y, d) 
+                               for y, d in year_and_doy])
     
-    if parameter == None:
-       parameter = names[3:]
+    if parameter == None: parameter = names[3:]
+      
 
     return df.loc[(df["year"]  == year), parameter]
 
@@ -176,13 +177,10 @@ def main():
     df = OMNI2Data(infile)
     
     
-    df = postdamData(infile = "database/postdam.txt",
-                year = 2014)
+    df = postdamData(infile = "database/postdam.txt")
     
     
-    df = df.loc[(df.index.year >= 1970) & 
-                (df.index.year <= 2020)]
-    
-    print(df.loc[df["F10.7obs"] == 0])
 
+    #print(df.loc[df.index.year == 2014].mean())
 
+#main()
