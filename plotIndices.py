@@ -59,10 +59,10 @@ def plotDisturbanceIndex(ax, df,
         ax.plot(df[col], lw = 1, color = "k")
         ax.axhline(0, **args)
     else:
-        y = df[col].values
-        x = df.index.values 
+        y = df[col]
+        x = df.index
         ax.axhline(3, **args)
-        ax.bar(x, y, width = 1, color = "k")
+        ax.bar(x, y, width = 2, color = "k")
     
     yticks = np.arange(ylim[0], ylim[-1] + step, step)
         
@@ -73,7 +73,7 @@ def plotDisturbanceIndex(ax, df,
     dateFormating(ax)
     
 def plotAuroralIndex(ax, df, 
-                     ylim = [-500, 500], 
+                     ylim = [-800, 800], 
                      step = 200):
     
     """Plotting auroral indexes"""
@@ -105,7 +105,7 @@ def plotAuroralIndex(ax, df,
     
     dateFormating(ax)
     
-def plotIndices():
+def plotIndices(year = 2013):
     
     
     fig = plt.figure(figsize = (8, 6))
@@ -114,14 +114,16 @@ def plotIndices():
     
     gs = fig.add_gridspec(1, bottom = 0.98, top = 1.2)
     ax1 =  gs.subplots()
-    plotSolarflux(ax1)
+    
+    
+    plotSolarflux(ax1, yshade = year)
 
 
     gs = fig.add_gridspec(3, hspace = 0.1)
     (ax2, ax3, ax4) = gs.subplots(sharex = 'col')
     
     df = OMNI2Data(infile = "database/omni.txt",
-                   year = 2014, parameter = None)
+                   year = year, parameter = None)
     
     plotDisturbanceIndex(ax2, df)
     
@@ -142,6 +144,9 @@ def plotIndices():
     
     return fig
     
-fig = plotIndices()
+def main():
+    fig = plotIndices()
+        
+    #fig.savefig("img/PlanetaryIndices.png")
     
-fig.savefig("img/PlanetaryIndices.png")
+main()
