@@ -23,7 +23,9 @@ def plotSolarflux(ax,
     
     ax.set(ylabel = "$_{F10,7} $ cm", 
            yticks = np.arange(100, 450, 100), 
-           xlabel = "Anos")
+           xlabel = "Anos", 
+           xlim = [datetime(years[0], 1, 1), 
+                   datetime(years[-1], 12, 31)])
     
     if yshade:
         date = datetime(yshade, 1, 1)
@@ -32,10 +34,8 @@ def plotSolarflux(ax,
                    end,
                    alpha = 0.5, color = "gray")
         
-        ax.text(end, 350, yshade, 
+        ax.text(end + timedelta(days = 5), 300, yshade, 
                 transform = ax.transData)
-    
-
 
     
     
