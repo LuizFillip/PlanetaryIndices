@@ -3,18 +3,10 @@ import matplotlib.pyplot as plt
 from base import postdamData, OMNI2Data
 import setup as s
 from datetime import datetime, timedelta
-import matplotlib.dates as dates
-
-
-def dateFormating(ax):
-    
-    ax.xaxis.set_major_formatter(dates.DateFormatter('%b'))
-    ax.xaxis.set_major_locator(dates.MonthLocator(interval = 1))
-    
-
+from utils import roundup
 
 def plotSolarflux(ax, 
-                  years = [1996, 2020], 
+                  years = [2008, 2022], 
                   yshade = 2014):
     
     """Plotting Solar flux F10.7 cm"""
@@ -44,12 +36,11 @@ def plotSolarflux(ax,
                 transform = ax.transData)
     
 
+
+    
     
 def plotDisturbanceIndex(ax, df, 
-                         col = "dst", 
-                         label = "Dst (nT)", 
-                         ylim = [-100, 50], 
-                         step = 30):
+                         col = "dst"):
     
     """Plotting Disturbance Storm and Kp indexes"""
     
@@ -58,23 +49,28 @@ def plotDisturbanceIndex(ax, df,
     if col == "dst":
         ax.plot(df[col], lw = 1, color = "k")
         ax.axhline(0, **args)
+        
+        vmin, vmax, step = compute_ticks(df[col])
+        
+        ax.set(ylabel = "Dst (nT)", 
+               ylim = [vmin - step, vmax], 
+               yticks = np.arange(vmin, 
+                                  vmax + step, step)
+               )
     else:
         y = df[col]
         x = df.index
-        ax.axhline(3, **args)
+        ax.axhline(4, **args)
         ax.bar(x, y, width = 2, color = "k")
     
-    yticks = np.arange(ylim[0], ylim[-1] + step, step)
-        
-    ax.set(ylabel = label, 
-           ylim = ylim, 
-           yticks = yticks)
+        ax.set(ylabel = "Índice Kp", 
+               ylim = [0, 9],
+               yticks = np.arange(0, 10, 2)
+                       )
     
-    dateFormating(ax)
+    s.format_axes_date(ax)
     
-def plotAuroralIndex(ax, df, 
-                     ylim = [-800, 800], 
-                     step = 200):
+def plotAuroralIndex(ax, df):
     
     """Plotting auroral indexes"""
     
@@ -91,35 +87,36 @@ def plotAuroralIndex(ax, df,
     ax.axhline(0, linestyle = "--", 
                color = "k", **args)
     
-    
-    yticks =  np.arange(ylim[0], 
-                        ylim[-1] + step, step)
+    vmin, vmax, step = compute_ticks(df['ae'])
                         
     ax1.set(ylabel = "AL (nT)", 
-            ylim = ylim, 
-            yticks = yticks)
+            ylim = [-vmax, vmax], 
+            yticks = np.arange(-vmax, 
+                                vmax + step, step))
     
     ax.set(ylabel = "AE (nT)", 
-            ylim = ylim, 
-            yticks = yticks)
+            ylim =  [-vmax, vmax], 
+            yticks = np.arange(-vmax, 
+                                vmax + step, step))
     
-    dateFormating(ax)
     
+    s.format_axes_date(ax)
+        
 def plotIndices(year = 2013):
     
     
-    fig = plt.figure(figsize = (8, 6))
+    fig = plt.figure(figsize = (10, 8))
     
     s.config_labels()
     
     gs = fig.add_gridspec(1, bottom = 0.98, top = 1.2)
+    
     ax1 =  gs.subplots()
-    
-    
+        
     plotSolarflux(ax1, yshade = year)
 
-
     gs = fig.add_gridspec(3, hspace = 0.1)
+    
     (ax2, ax3, ax4) = gs.subplots(sharex = 'col')
     
     df = OMNI2Data(infile = "database/omni.txt",
@@ -128,10 +125,7 @@ def plotIndices(year = 2013):
     plotDisturbanceIndex(ax2, df)
     
     plotDisturbanceIndex(ax3, df, 
-                         col = "kp", 
-                         label = "Índice Kp", 
-                         ylim = [0, 9], 
-                         step = 2)
+                         col = "kp")
      
     plotAuroralIndex(ax4, df)
     
@@ -145,7 +139,7 @@ def plotIndices(year = 2013):
     return fig
     
 def main():
-    fig = plotIndices()
+    plotIndices(year = 2015)
         
     #fig.savefig("img/PlanetaryIndices.png")
     
