@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from base import postdamData, OMNI2Data
 import setup as s
 from datetime import datetime, timedelta
-from utils import roundup
+from utils import compute_ticks
 
 def plotSolarflux(ax, 
                   years = [2008, 2022], 
@@ -13,8 +13,8 @@ def plotSolarflux(ax,
     
     sflux = postdamData(infile = "database/postdam.txt")
     
-    sflux = sflux.loc[(sflux.index.year > years[0]) & 
-                      (sflux.index.year < years[-1]) & 
+    sflux = sflux.loc[(sflux.index.year >= years[0]) & 
+                      (sflux.index.year <=   years[-1]) & 
                       (sflux["F10.7obs"] > 10) & 
                       (sflux["F10.7obs"] < 500)]
     
