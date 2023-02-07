@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 import pandas as pd
 import os 
 
@@ -22,7 +22,7 @@ def extract_rows(contents: str):
         month = int(string_date[4:6])
         day = int(string_date[6:8])
         
-        return datetime.date(year, month, day)
+        return dt.date(year, month, day)
     
     aptimes_ = [int(num.strip()) for num in aptimes.split()]
     
@@ -81,14 +81,13 @@ def OMNI2Data(infile: str,
     
     df["kp"] = df["kp"] / 10
     
-    def doy_to_date(y: int, d:int) -> datetime.date:
-        
-        return (datetime.date(int(y), 1, 1) + 
-                datetime.timedelta(int(d) - 1))
+    def doy2date(y: int, d:int) -> dt.date:
+        return (dt.date(int(y), 1, 1) + 
+                dt.timedelta(int(d) - 1))
     
     year_and_doy = zip(df.year.values, df.doy.values)
   
-    df.index = pd.to_datetime([doy_to_date(y, d) 
+    df.index = pd.to_datetime([doy2date(y, d) 
                                for y, d in year_and_doy])
     
     if parameter == None: parameter = names[3:]
@@ -117,6 +116,9 @@ def postdamData(infile: str):
     df["F10.7a"] = df["F10.7obs"].rolling(window = 81).mean()
     
     return df.loc[df["D"] == 2] 
+
+#_date_ = pd.to_datetime(date.date())
+# return 
  
 
 def SYM_ASY_Data(infile: str, 
@@ -165,22 +167,31 @@ def concat_files(infile: str,
     if save:
         df.to_csv("database/asy_sym.txt", 
                       index = True, 
-                      sep = " ")
-        
+                      sep = " ") 
     else:
         return df
+    
+class get_indices(object):
+    
+    def __init__(self, date = dt.date(2014, 1, 1)):
+        
+        df = postdamData(infile = "database/postdam.txt")
+        
+        self.ts = df.loc[df.index.date == date, ]
+    
+    def get(self, parameter):
+        return self.ts[parameter].item()
+    
 
 def main():
    
     
-    infile = "database/omni.txt"   
-    df = OMNI2Data(infile)
+    
+    ts = get_indices(date)
+    
+    F107a = ts.get("F10.7a")
+    F107obs = ts.get("F10.7obs")
+    Ap = ts.get("Ap")
     
     
-    df = postdamData(infile = "database/postdam.txt")
-    
-    
-
-    #print(df.loc[df.index.year == 2014].mean())
-
-#main()
+    #print(Ap, F107a)
