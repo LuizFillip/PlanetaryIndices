@@ -117,10 +117,6 @@ def postdamData(infile: str):
     
     return df.loc[df["D"] == 2] 
 
-#_date_ = pd.to_datetime(date.date())
-# return 
- 
-
 def SYM_ASY_Data(infile: str, 
                  frequency = "1D"):
     
@@ -182,16 +178,7 @@ class get_indices(object):
     def get(self, parameter):
         return self.ts[parameter].item()
     
-
 def main():
+    print(get_indices().get("Ap"))
+    
    
-    
-    
-    ts = get_indices(date)
-    
-    F107a = ts.get("F10.7a")
-    F107obs = ts.get("F10.7obs")
-    Ap = ts.get("Ap")
-    
-    
-    #print(Ap, F107a)
