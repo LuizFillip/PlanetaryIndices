@@ -1,7 +1,7 @@
 import datetime as dt
 import pandas as pd
 import os 
-
+from build import paths as p 
 
 def extract_rows(contents: str):
     result = []
@@ -117,61 +117,15 @@ def postdamData(infile: str):
     
     return df.loc[df["D"] == 2] 
 
-def SYM_ASY_Data(infile: str, 
-                 frequency = "1D"):
-    
-    '''IAGA-2002 format like'''
-    
-    df = pd.read_csv(infile, 
-                     header = 14, 
-                     delim_whitespace = True)
-    
-    df.index = pd.to_datetime(df["DATE"] + " " + 
-                              df["TIME"])
-    
-    df = df.loc[:, ["ASY-D", "ASY-H", 
-                    "SYM-D", "SYM-H"]]
-    
-    df = df.resample(frequency).asfreq()
-    
-    return df
 
-
-def read_sym_asy(year = 2014):
-    
-    df = pd.read_csv("database/asy_sym.txt", 
-                     delim_whitespace= True)
-    
-    
-    df.index = pd.to_datetime(df.index)
-    
-    return df.loc[df.index.year == year, :]   
-
-def concat_files(infile: str, 
-                 save = True) -> pd.DataFrame:
-    
-    _, _, files  = next(os.walk(infile))
-
-    out = []
-    for filename in files:
-        
-        out.append(SYM_ASY_Data(infile, 
-                                filename))
-    
-    df = pd.concat(out)
-    
-    if save:
-        df.to_csv("database/asy_sym.txt", 
-                      index = True, 
-                      sep = " ") 
-    else:
-        return df
     
 class get_indices(object):
     
     def __init__(self, date = dt.date(2014, 1, 1)):
         
-        df = postdamData(infile = "database/postdam.txt")
+        files = p("PlanetaryIndices").get_pathfile
+        
+        df = postdamData(files[-1])
         
         self.ts = df.loc[df.index.date == date, ]
     
@@ -181,4 +135,3 @@ class get_indices(object):
 def main():
     print(get_indices().get("Ap"))
     
-   
