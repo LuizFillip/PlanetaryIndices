@@ -123,7 +123,7 @@ class get_indices(object):
     
     def __init__(self, date = dt.date(2014, 1, 1)):
         
-        files = p("PlanetaryIndices").get_pathfile
+        files = p("PlanetaryIndices").files
         
         df = postdamData(files[-1])
         
