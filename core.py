@@ -123,9 +123,9 @@ class get_indices(object):
     
     def __init__(self, date = dt.date(2014, 1, 1)):
         
-        files = p("PlanetaryIndices").files
+        infile = "database/PlanetaryIndices/postdam.txt"
         
-        df = postdamData(files[-1])
+        df = postdamData(infile)
         
         self.ts = df.loc[df.index.date == date, ]
     
