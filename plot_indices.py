@@ -1,11 +1,11 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from base import postdamData, OMNI2Data
-import setup as s
+import settings as s
 from datetime import datetime, timedelta
 from utils import compute_ticks
 
-def plotSolarflux(ax, 
+def plot_solar_flux(ax, 
                   years = [2008, 2022], 
                   yshade = 2014):
     
@@ -39,8 +39,11 @@ def plotSolarflux(ax,
 
     
     
-def plotDisturbanceIndex(ax, df, 
-                         col = "dst"):
+def plot_disturbance_index(
+        ax, 
+        df, 
+        col = "dst"
+        ):
     
     """Plotting Disturbance Storm and Kp indexes"""
     
@@ -70,7 +73,7 @@ def plotDisturbanceIndex(ax, df,
     
     s.format_axes_date(ax)
     
-def plotAuroralIndex(ax, df):
+def plot_auroral_index(ax, df):
     
     """Plotting auroral indexes"""
     
@@ -113,7 +116,7 @@ def plotIndices(year = 2013):
     
     ax1 =  gs.subplots()
         
-    plotSolarflux(ax1, yshade = year)
+    plot_solar_flux(ax1, yshade = year)
 
     gs = fig.add_gridspec(3, hspace = 0.1)
     
@@ -124,7 +127,7 @@ def plotIndices(year = 2013):
     
     plotDisturbanceIndex(ax2, df)
     
-    plotDisturbanceIndex(ax3, df, 
+    plot_disturbance_index(ax3, df, 
                          col = "kp")
      
     plotAuroralIndex(ax4, df)
@@ -143,4 +146,4 @@ def main():
         
     #fig.savefig("img/PlanetaryIndices.png")
     
-main()
+# main()

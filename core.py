@@ -1,7 +1,5 @@
 import datetime as dt
 import pandas as pd
-import os 
-from build import paths as p 
 
 def extract_rows(contents: str):
     result = []
@@ -35,8 +33,10 @@ def extract_rows(contents: str):
     return (result)
 
 
-def KpAp_KyotoData(infile:str, 
-                           year: int = 2014) -> pd.DataFrame:
+def KpAp_Kyoto(
+        infile: str, 
+        year: int = 2014
+        ) -> pd.DataFrame:
 
     with open(infile) as f:
         data = [line.strip() for line in f.readlines()]
@@ -63,7 +63,7 @@ def KpAp_KyotoData(infile:str,
     return df.loc[df.index.year == year, :]
 
 
-def OMNI2Data(infile: str, 
+def OMNI2(infile: str, 
               year: int = 2014, 
               parameter:str = "dst") -> pd.DataFrame:
     
@@ -97,7 +97,7 @@ def OMNI2Data(infile: str,
 
 
 
-def postdamData(infile: str):
+def postdam(infile: str):
     
     """Read data from GFZ postdam"""
     df = pd.read_csv(infile, 
@@ -109,8 +109,9 @@ def postdamData(infile: str):
                                     month = df['MM'], 
                                     day = df['DD']))
     
-    df = df.drop(columns = ["#YYY", "MM", "DD", 
-                            "days", "days_m", 
+    df = df.drop(
+        columns = ["#YYY", "MM", "DD", 
+                   "days", "days_m", 
                             "Bsr", "dB"])
     
     df["F10.7a"] = df["F10.7obs"].rolling(window = 81).mean()
@@ -125,7 +126,7 @@ class get_indices(object):
         
         infile = "database/PlanetaryIndices/postdam.txt"
         
-        df = postdamData(infile)
+        df = postdam(infile)
         
         self.ts = df.loc[df.index.date == date, ]
     

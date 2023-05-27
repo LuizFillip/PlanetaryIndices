@@ -1,9 +1,1 @@
-import os, sys
-
-parent = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-
-sys.path.append(parent)
-
-
-from .core import *
+from .core import get_indices, OMNI2, postdam
