@@ -1,57 +1,46 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from PlanetaryIndices import OMNI2
 import settings as s
 import datetime as dt
+import pandas as pd
 
 
-def plot_disturbance_index(
-        ax, 
-        df, 
-        col = "dst"
+def plot_disturbance_index(ax,
+       infile
         ):
     
     """Plotting Disturbance Storm and Kp indexes"""
     
-    args = dict(linestyle = "--", color = "k", lw = 1)
+    df = pd.read_csv(infile, index_col=0)
+    df.index = pd.to_datetime(df.index)
+
+    df = df[(df.index > dt.datetime(2013, 3, 15)) &
+            (df.index < dt.datetime(2013, 3, 20))]
+
+
+  
+
+    ax.plot(df, lw= 1)
+    ax.axhline(0, linestyle = "--")
+    s.format_time_axes(ax)
+
+    ax.set(ylabel = "Dst (nT)", 
+           xlim = [df.index[0],  df.index[-1]], 
+           ylim = [-200, 50], 
+           yticks = np.arange(-200, 100, 50))
+
+
+    s.config_labels(fontsize = 20)
+    plt.show()
     
-    if col == "dst":
-        ax.plot(df[col], lw = 1, color = "k")
-        ax.axhline(0, **args)
-        
-        # vmin, vmax, step = compute_ticks(df[col])
-        
-        ax.set(ylabel = "Dst (nT)", 
-               # ylim = [vmin - step, vmax], 
-               # yticks = np.arange(
-               #     vmin, 
-               #     vmax + step, 
-               #     step
-               #     )
-               )
-    else:
-        y = df[col]
-        x = df.index
-        ax.axhline(4, **args)
-        ax.bar(x, y, width = 2, color = "k")
+    return ax
+
+def main():
+    infile = "database/PlanetaryIndices/kyoto2000.txt"
+    fig, ax = plt.subplots(
+        dpi = 300,
+        figsize = (14, 6)
+        )
+    fig = plot_disturbance_index(ax, infile)
     
-        ax.set(ylabel = "Índice Kp", 
-               ylim = [0, 9],
-               yticks = np.arange(0, 10, 2)
-                       )
-    
-    s.format_axes_date(ax)
-    
-import pandas as pd
-infile = "database/PlanetaryIndices/kyoto2000.txt"
-# 
-
-
-# df = df[(df.index > dt.datetime(2013, 3, 13)) &
-#         (df.index < dt.datetime(2013, 3, 23))]
-
-
-df = pd.read_csv(infile, index_col=0)
-df.index = pd.to_datetime(df.index)
-
-df
+    #fig.savefig("PlanetaryIndices/figures/dst_index.png", dpi = 300)
