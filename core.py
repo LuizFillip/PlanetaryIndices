@@ -62,41 +62,6 @@ def KpAp_Kyoto(
     
     return df.loc[df.index.year == year, :]
 
-
-def OMNI2(infile: str, 
-              year: int = 2014, 
-              parameter:str = "dst") -> pd.DataFrame:
-    
-    
-    names =  ["year", "doy", "hour", 
-              "B", "kp", 
-              "dst", "ap", "f107", 
-              "ae", "al", "au"]
-    
-    df = pd.read_csv(infile, 
-                     header = None, 
-                     names = names, 
-                     delim_whitespace = True)
-    
-    
-    df["kp"] = df["kp"] / 10
-    
-    def doy2date(y: int, d:int) -> dt.date:
-        return (dt.date(int(y), 1, 1) + 
-                dt.timedelta(int(d) - 1))
-    
-    year_and_doy = zip(df.year.values, df.doy.values)
-  
-    df.index = pd.to_datetime([doy2date(y, d) 
-                               for y, d in year_and_doy])
-    
-    if parameter == None: parameter = names[3:]
-      
-
-    return df.loc[(df["year"]  == year), parameter]
-
-
-
 def postdam(infile: str):
     
     """Read data from GFZ postdam"""
@@ -136,3 +101,22 @@ class get_indices(object):
 def main():
     print(get_indices().get("Ap"))
     
+# KpAp_Kyoto("database/PlanetaryIndices/kyoto2000.txt")
+
+def hourly_kp_from_postdam():
+    infile = "database/PlanetaryIndices/postdam.txt"
+    
+    df = postdam(infile)
+  
+    out = []
+    index = []
+    for dn in df.index:
+        hrs = pd.date_range(dn, periods = 8, freq = "3H")
+        for i in range(len(hrs)):
+            out.append(df.loc[dn, f'Kp{i + 1}'])
+            index.append(hrs[i])
+            
+            
+    ds = pd.DataFrame({"Kp": out}, index = index)
+    
+    ds.to_csv("database/PlanetaryIndices/Kp_hourly.txt")
