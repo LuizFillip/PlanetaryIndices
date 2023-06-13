@@ -31,6 +31,9 @@ def process_kyoto_data(infile):
 
 infile = "database/PlanetaryIndices/kyoto2013_03.txt"
 
+
+
+
 def process_IAGA2002(infile):
     df = pd.read_csv(infile, header = 14, delim_whitespace=True)
     
@@ -42,3 +45,7 @@ def process_IAGA2002(infile):
     
     
     df.to_csv(infile)
+    
+df = pd.read_csv(infile, header = 14, delim_whitespace=True)
+
+df
