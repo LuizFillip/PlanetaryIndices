@@ -48,6 +48,18 @@ def plot_kp(ax, infile):
     ax1.set(ylabel = '$F_{10.7}$')
     s.change_axes_color(ax1, line)
     
+def plot_aroural(ax, infile):
+
+    ae = load(infile + "kyoto2013_03.txt")
+    
+    ax.plot(ae[["AE", "AL"]], 
+               label = ['AE', 'AL'])
+    
+    ax.set(ylabel = 'AE/AL (nT)', 
+              ylim = [-3000, 3000])
+    
+    ax.legend(ncol = 2, loc = 'upper right')
+    
 def plot_dst(ax, infile):
     dst = load(infile + "kyoto2000.txt")
     
@@ -55,47 +67,50 @@ def plot_dst(ax, infile):
     
     ax.set(
         xlim = [dst.index[0], dst.index[-1]], 
-        ylim = [-150, 50],
+        ylim = [-150, 70],
         ylabel = "Dst (nT)"
         )
-fig, ax = plt.subplots(
-    dpi = 300,
-    figsize = (10, 10),
-    sharex = True,
-    nrows = 4
-    )
-
-plt.subplots_adjust(hspace = 0.1)
-
-infile = 'database/PlanetaryIndices/'
-
-ae = load(infile + "kyoto2013_03.txt")
-
-ax[0].plot(ae[["AE", "AL"]], 
-           label = ['AE', 'AL'])
-
-ax[0].set(ylabel = 'AE/AL (nT)', 
-          ylim = [-3000, 3000])
-
-ax[0].legend(ncol = 2, loc = 'upper right')
-
-
-
-plot_mag_electron(ax[1], infile)
-
     
-plot_kp(ax[2], infile)
-
-
-
-plot_dst(ax[3], infile)
-s.format_time_axes(ax[3], pad = 60)
-
-for i, ax in enumerate(ax.flat):
-    letter = s.chars()[i]
-    ax.axhline(0, linestyle = '--')
-    ax.text(
-        0.015, 0.85, f"({letter})", 
-        transform = ax.transAxes
+    return dst
+    
+def plot_solar_wind(ax, infile):
+    df = load(infile + 'omni_2012_2015.lst')
+    df = df.loc[~(df['Speed'] > 9990)]
+    ax.plot(df['Speed'])
+    
+    ax.set(ylabel = '$V_{sw}$ (km/s)', ylim = [200, 900])
+    
+    
+def plot_indices_2():
+    fig, ax = plt.subplots(
+        dpi = 300,
+        figsize = (14, 14),
+        sharex = True,
+        nrows = 5
         )
-plt.show()
+    
+    plt.subplots_adjust(hspace = 0.1)
+    
+    infile = 'database/PlanetaryIndices/'
+    
+    plot_solar_wind(ax[0], infile)
+    plot_aroural(ax[1], infile)
+    plot_mag_electron(ax[2], infile)
+    plot_kp(ax[3], infile)
+    df = plot_dst(ax[4], infile)
+    
+    s.format_time_axes(ax[4], pad = 60)
+    
+    for i, ax in enumerate(ax.flat):
+        letter = s.chars()[i]
+        ax.axhline(0, linestyle = '--')
+        ax.text(
+            0.02, 0.83, f"({letter})", 
+            transform = ax.transAxes
+            )
+        plot_terminators(ax, df)
+    return fig 
+
+f = plot_indices_2()
+
+f.savefig('PlanetaryIndices/figures/IMF_index.png', dpi = 300)
