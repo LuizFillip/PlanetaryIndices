@@ -77,7 +77,7 @@ def postdam(infile: str):
     df = df.drop(
         columns = ["#YYY", "MM", "DD", 
                    "days", "days_m", 
-                            "Bsr", "dB"])
+                   "Bsr", "dB"])
     
     df["F10.7a"] = df["F10.7obs"].rolling(window = 81).mean()
     
@@ -98,11 +98,6 @@ class get_indices(object):
     def get(self, parameter):
         return self.ts[parameter].item()
     
-def main():
-    print(get_indices().get("Ap"))
-    
-# KpAp_Kyoto("database/PlanetaryIndices/kyoto2000.txt")
-
 def hourly_kp_from_postdam():
     infile = "database/PlanetaryIndices/postdam.txt"
     
@@ -120,3 +115,36 @@ def hourly_kp_from_postdam():
     ds = pd.DataFrame({"Kp": out}, index = index)
     
     ds.to_csv("database/PlanetaryIndices/Kp_hourly.txt")
+    
+    
+def save_solar_flux():
+        
+    infile = 'database/PlanetaryIndices/postdam.txt'   
+    df = postdam(infile)
+    
+    df[['F10.7obs', 'F10.7adj', 'F10.7a']].to_csv("database/PlanetaryIndices/solar_flux.txt")
+
+
+def reapeat_for_time(dn, df):
+    
+    delta = dt.timedelta(hours = 23, minutes = 44)
+    
+    times = pd.date_range(dn, dn + delta, freq = '10min')
+    
+    ds = df.loc[df.index == dn]
+    
+    ds_repeat = ds.reindex(
+        ds.index.repeat(len(times))
+        )
+    
+    ds_repeat.index = times
+    
+    return ds_repeat
+
+def repeat_values_in_data(df):
+
+    out = [reapeat_for_time(dn, df) for dn in df.index]
+        
+    return pd.concat(out)
+    
+        
