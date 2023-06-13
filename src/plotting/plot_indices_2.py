@@ -1,8 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import settings as s
-from common import plot_terminators
-from common import load
+from common import plot_terminators, load
 from PlanetaryIndices import repeat_values_in_data
 
 def plot_mag_electron(ax, infile):
@@ -71,6 +70,14 @@ def plot_dst(ax, infile):
         ylabel = "Dst (nT)"
         )
     
+    ax1 = ax.twinx()
+    df = load(infile + 'omni_2012_2015.lst')
+    line, = ax1.plot(df['SymH'], color = '#0C5DA5')
+    
+    ax1.set(ylabel = 'SYM-H', ylim = [-200, 100])
+    s.change_axes_color(ax1, line)
+    
+    
     return dst
     
 def plot_solar_wind(ax, infile):
@@ -81,6 +88,7 @@ def plot_solar_wind(ax, infile):
     ax.set(ylabel = '$V_{sw}$ (km/s)', ylim = [200, 900])
     
     
+    
 def plot_indices_2():
     fig, ax = plt.subplots(
         dpi = 300,
@@ -89,7 +97,7 @@ def plot_indices_2():
         nrows = 5
         )
     
-    plt.subplots_adjust(hspace = 0.1)
+    plt.subplots_adjust(hspace = 0)
     
     infile = 'database/PlanetaryIndices/'
     
@@ -113,4 +121,4 @@ def plot_indices_2():
 
 f = plot_indices_2()
 
-f.savefig('PlanetaryIndices/figures/IMF_index.png', dpi = 300)
+# f.savefig('PlanetaryIndices/figures/IMF_index.png', dpi = 300)
