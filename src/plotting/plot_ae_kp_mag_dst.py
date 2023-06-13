@@ -80,4 +80,4 @@ def plot_ae_kp_mag_dst():
                 bbox_inches = "tight")
     
     
-plot_ae_kp_mag_dst()
+# plot_ae_kp_mag_dst()
