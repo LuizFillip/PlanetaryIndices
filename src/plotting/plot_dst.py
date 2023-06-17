@@ -14,7 +14,7 @@ def plot_disturbance_index(ax,
     df = pd.read_csv(infile, index_col=0)
     df.index = pd.to_datetime(df.index)
 
-    df = df[(df.index > dt.datetime(2013, 3, 15)) &
+    df = df[(df.index > dt.datetime(2013, 3, 10)) &
             (df.index < dt.datetime(2013, 3, 20))]
 
 
@@ -43,4 +43,6 @@ def main():
         )
     fig = plot_disturbance_index(ax, infile)
     
-    #fig.savefig("PlanetaryIndices/figures/dst_index.png", dpi = 300)
+    #fig.savefig("PlanetaryIndices/figures/dst_index.png", dpi = 30
+    
+# main()
