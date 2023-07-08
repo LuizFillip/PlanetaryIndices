@@ -1,10 +1,11 @@
-import numpy as np
 import matplotlib.pyplot as plt
 import settings as s
 from common import plot_terminators, load
 import datetime as dt
 import FabryPerot as fp
-
+import digisonde as dg
+from utils import smooth2, split_time
+import pandas as pd
 
 def plot_mag_electron(ax, infile):
     
@@ -27,7 +28,9 @@ def plot_mag_electron(ax, infile):
     s.change_axes_color(ax1, line)
     
 
-    
+    return ax
+
+
 def plot_aroural(ax, infile):
 
     ae = load(infile + "kyoto2013_03.txt")
@@ -57,9 +60,7 @@ def plot_dst(ax, infile):
     
     
     return dst
-import digisonde as dg
-from utils import smooth2, split_time
-import pandas as pd
+
 
 
 def plot_vz(ax):

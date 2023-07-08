@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import settings as s
 from common import plot_terminators
-from common import load
+from common import load_by_time
 
 
 def plot_ae_kp_mag_dst():
@@ -19,11 +19,11 @@ def plot_ae_kp_mag_dst():
     
     plt.subplots_adjust(hspace = 0.1)
     
-    ae = load("database/PlanetaryIndices/kyoto2013_03.txt")
+    ae = load_by_time("database/PlanetaryIndices/kyoto2013_03.txt")
     ax[0].plot(ae[["AE", "AL"]], label = ['AE', 'AL'])
     
     
-    kp = load("database/PlanetaryIndices/Kp_hourly.txt")
+    kp = load_by_time("database/PlanetaryIndices/Kp_hourly.txt")
     x = kp.index
     y = kp["Kp"].values
     
@@ -36,7 +36,7 @@ def plot_ae_kp_mag_dst():
               ylim = [0, 9], 
               yticks = np.arange(0, 9, 2))
     
-    mag = load("database/magnetometers/mag.txt").sort_index()
+    mag = load_by_time("database/magnetometers/mag.txt").sort_index()
     
     ax[2].plot(mag['F'])
     
@@ -53,7 +53,7 @@ def plot_ae_kp_mag_dst():
     ax[0].axhline(0, linestyle = "--")
     
     
-    dst = load("database/PlanetaryIndices/kyoto2000.txt")
+    dst = load_by_time("database/PlanetaryIndices/kyoto2000.txt")
     
     ax[3].plot(dst['dst'])
     
@@ -74,10 +74,10 @@ def plot_ae_kp_mag_dst():
         plot_terminators(ax, dst)
         
         
-    fig.savefig("PlanetaryIndices/figures/dst_ae_index.png", 
-                dpi = 300, 
-                pad_inches = 0, 
-                bbox_inches = "tight")
+    # fig.savefig("PlanetaryIndices/figures/dst_ae_index.png", 
+    #             dpi = 300, 
+    #             pad_inches = 0, 
+    #             bbox_inches = "tight")
     
     
-# plot_ae_kp_mag_dst()
+plot_ae_kp_mag_dst()
