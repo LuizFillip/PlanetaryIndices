@@ -39,7 +39,7 @@ def plot_solar_flux(ax,
 
     
     
-def plot_disturbance_index(
+def plot_disturbance_indexes(
         ax, 
         df, 
         col = "dst"
@@ -73,7 +73,9 @@ def plot_disturbance_index(
     
     s.format_axes_date(ax)
     
-def plot_auroral_index(ax, df):
+    return ax
+    
+def plot_auroral_indexes(ax, df):
     
     """Plotting auroral indexes"""
     
@@ -125,12 +127,12 @@ def plotIndices(year = 2013):
     df = OMNI2Data(infile = "database/omni.txt",
                    year = year, parameter = None)
     
-    plotDisturbanceIndex(ax2, df)
+    plot_disturbance_indexes(ax2, df)
     
-    plot_disturbance_index(ax3, df, 
+    plot_disturbance_indexes(ax3, df, 
                          col = "kp")
      
-    plotAuroralIndex(ax4, df)
+    plot_auroral_indexes(ax4, df)
     
     ax4.set(xlabel = "Meses")
     
