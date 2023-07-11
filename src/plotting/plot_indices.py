@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from base import postdamData, OMNI2Data
+from omni import postdamData, OMNI2Data
 import settings as s
 from datetime import datetime, timedelta
 from utils import compute_ticks
@@ -149,3 +149,6 @@ def main():
     #fig.savefig("img/PlanetaryIndices.png")
     
 # main()
+year = 2013
+df = OMNI2Data(infile = "database/PlanetaryIndices/omni.txt",
+               year = year, parameter = None)

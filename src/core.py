@@ -1,5 +1,6 @@
 import datetime as dt
 import pandas as pd
+from common import sel_times
 
 def extract_rows(contents: str):
     result = []
@@ -118,11 +119,13 @@ def hourly_kp_from_postdam():
     
     
 def save_solar_flux():
-        
+    save_in = "database/PlanetaryIndices/solar_flux.txt"
     infile = 'database/PlanetaryIndices/postdam.txt'   
     df = postdam(infile)
     
-    df[['F10.7obs', 'F10.7adj', 'F10.7a']].to_csv("database/PlanetaryIndices/solar_flux.txt")
+    df[['F10.7obs', 
+        'F10.7adj', 
+        'F10.7a']].to_csv(save_in)
 
 
 def reapeat_for_time(dn, df):
@@ -147,4 +150,21 @@ def repeat_values_in_data(df):
         
     return pd.concat(out)
     
-        
+
+def sel_dates(df):
+
+    start = dt.datetime(2013, 1, 1)
+    end = dt.datetime(2013, 12, 31)
+    
+    df = df[(df.index >= start) & (df.index <= end)]
+
+import matplotlib.pyplot as plt
+
+
+def save_only(df):
+    
+    df['kp'] = df[['Kp1', 'Kp2', 'Kp3', 'Kp4', 'Kp5', 'Kp6', 'Kp7', 'Kp8']].max(axis = 1)
+    
+   
+    df[['F10.7adj', 'kp', 'Ap', 'F10.7a']].to_csv('database/PlanetaryIndices/kp_postdam.txt')
+    
