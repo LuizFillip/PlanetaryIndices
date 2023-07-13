@@ -1,83 +1,67 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import settings as s
-from common import plot_terminators
-from common import load_by_time
+from common import load, sel_dates
+import datetime as dt
 
-
-def plot_ae_kp_mag_dst():
+def plot_indices_4():
     
-    
-    s.config_labels()
     
     fig, ax = plt.subplots(
         dpi = 300,
-        figsize = (10, 10),
+        figsize = (15, 10),
         sharex = True,
-        nrows = 4
+        nrows = 3
         )
     
     plt.subplots_adjust(hspace = 0.1)
     
-    ae = load_by_time("database/PlanetaryIndices/kyoto2013_03.txt")
-    ax[0].plot(ae[["AE", "AL"]], label = ['AE', 'AL'])
+
+    start = dt.datetime(2013, 1, 1)
+    end = dt.datetime(2015, 12, 31)
+    
+    dst_file = 'database/PlanetaryIndices/kyoto2000.txt'
+    kp_file = "database/PlanetaryIndices/kp_postdam.txt"
+    dst = sel_dates( 
+        load(dst_file),
+        start, end
+        )
+    
+    ax[0].plot(dst)
+    
+    for h in [-50, -100]:
+        ax[0].axhline(h, color = 'r', lw = 2)
+        
+    ax[0].set(
+         ylim = [-200, 100],
+         ylabel = "Dst (nT)"
+         )
     
     
-    kp = load_by_time("database/PlanetaryIndices/Kp_hourly.txt")
+    kp = sel_dates(
+        load(kp_file),
+        start, end)
+    
     x = kp.index
-    y = kp["Kp"].values
+    y = kp["kp"].values
     
-    ax[1].bar(x, y, width = 0.1, color = "gray")
-    
-    ax[0].set(ylabel = 'AE/AL (nT)', 
-              ylim = [-3000, 3000])
+    ax[1].bar(x, y, width = 0.5, color = "black")
     
     ax[1].set(ylabel = 'Kp', 
               ylim = [0, 9], 
-              yticks = np.arange(0, 9, 2))
+              yticks = np.arange(0, 9, 2)
+              )
     
-    mag = load_by_time("database/magnetometers/mag.txt").sort_index()
+    for h in [3, 6]:
+        ax[1].axhline(h, color = 'r', lw = 2)
     
-    ax[2].plot(mag['F'])
+    ax[2].plot(kp['F10.7a'])
     
-    ax1 = ax[2].twinx()
+    ax[2].set(ylabel = '$F_{10.7}$')
     
-    line, = ax1.plot(mag['Z'], color = '#0C5DA5')
+    ax[2].set(xlim = [start, end])
+    s.axes_month_format(ax[2], 
+                        month_locator = 4, 
+                        pad = 60)
     
-    ax[2].set(ylim = [26100, 26400], ylabel = "$B_F$ (nT)")
-    ax1.set(ylim = [-3300, -3500], ylabel = "$B_z$ (nT)")
-    
-    s.change_axes_color(ax1, line)
-    
-    ax[3].axhline(0, linestyle = "--")
-    ax[0].axhline(0, linestyle = "--")
-    
-    
-    dst = load_by_time("database/PlanetaryIndices/kyoto2000.txt")
-    
-    ax[3].plot(dst['dst'])
-    
-    ax[3].set(
-        xlim = [dst.index[0], dst.index[-1]], 
-        ylim = [-150, 50],
-        ylabel = "Dst (nT)"
-        )
-    
-    s.format_time_axes(ax[3])
-
-    for i, ax in enumerate(ax.flat):
-        letter = s.chars()[i]
-        ax.text(
-            0.015, 0.85, f"({letter})", 
-            transform = ax.transAxes
-            )
-        plot_terminators(ax, dst)
-        
-        
-    # fig.savefig("PlanetaryIndices/figures/dst_ae_index.png", 
-    #             dpi = 300, 
-    #             pad_inches = 0, 
-    #             bbox_inches = "tight")
-    
-    
-plot_ae_kp_mag_dst()
+plot_indices_4()
