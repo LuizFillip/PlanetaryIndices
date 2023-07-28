@@ -1,7 +1,5 @@
 import pandas as pd
 import datetime as dt
-import numpy as np
-
 
 names =  ["year", "doy", "hour", 
           "B", "kp", 

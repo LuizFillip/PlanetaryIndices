@@ -1,6 +1,5 @@
 import datetime as dt
 import pandas as pd
-from common import sel_times
 
 def extract_rows(contents: str):
     result = []
