@@ -157,8 +157,6 @@ def sel_dates(df):
     
     df = df[(df.index >= start) & (df.index <= end)]
 
-import matplotlib.pyplot as plt
-
 
 def save_only(df):
     
