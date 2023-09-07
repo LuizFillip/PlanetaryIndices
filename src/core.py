@@ -1,3 +1,4 @@
+
 import datetime as dt
 import pandas as pd
 
@@ -160,8 +161,13 @@ def sel_dates(df):
 
 def save_only(df):
     
-    df['kp'] = df[['Kp1', 'Kp2', 'Kp3', 'Kp4', 'Kp5', 'Kp6', 'Kp7', 'Kp8']].max(axis = 1)
+    df['kp'] = df[['Kp1', 'Kp2', 'Kp3', 
+                   'Kp4', 'Kp5', 'Kp6',
+                   'Kp7', 'Kp8']].max(axis = 1)
     
    
-    df[['F10.7adj', 'kp', 'Ap', 'F10.7a']].to_csv('database/PlanetaryIndices/kp_postdam.txt')
-    
+    df[['F10.7adj', 'kp', 
+        'Ap', 'F10.7a']].to_csv('database/PlanetaryIndices/kp_postdam.txt')
+    # dialy = gd.GFZ()
+
+    # dialy.to_csv('database/indices/indeces.txt')
