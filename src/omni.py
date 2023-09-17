@@ -16,9 +16,10 @@ def dt2dttime(y, d, hour, minute):
 def doy2date(df):
     return dt.date(int(df.year), 1, 1) + dt.timedelta(int(df.doy) - 1)
 
-def set_names():
-    
-    format_file =  'database/indices/omni_format.txt' 
+def set_names(
+        format_file =  'database/indices/omni_format.txt'
+        ):
+
     f = open(format_file).readlines()
     
     names = {}
@@ -46,23 +47,40 @@ def OMNI2(infile:str, names: list[str]) -> pd.DataFrame:
     
     df.index = df.apply(lambda x: doy2date(x), axis = 1)
     
-    df.replace(99999, np.nan, inplace = True)
+    df.replace((99999, 9999), np.nan, inplace = True)
     return df
     
-def main():
-    
-    
-    names =  set_names().values()
-    
-    # 
-    
-    # df.to_csv(infile)
-    
-    # print(df)
-    
-names =  set_names().values()
+
+
+
 infile = "database/indices/omni.txt"
-df = OMNI2(infile, names)
 
 
-df
+def process(infile):
+    try:
+        names =  set_names().values()
+        ds = OMNI2(infile, names)
+        
+        ds.to_csv(infile)
+        
+    except:
+        print('file already convert')
+        pass
+    
+
+# process(infile)
+
+
+def refix_parameters(df): 
+
+
+    df['f10.7'].replace(999.9, np.nan, 
+               inplace = True)
+    
+    df['kp'] = df['kp']/9
+    
+    cols = [s.replace(',', '') for s in df.columns]
+    
+    df.columns =  cols
+    
+    del df['hour']
