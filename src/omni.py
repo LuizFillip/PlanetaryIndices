@@ -1,51 +1,68 @@
 import pandas as pd
 import datetime as dt
+import numpy as np 
 
-names =  ["year", "doy", "hour", 
-          "B", "kp", 
-          "dst", "ap", "f107", 
-          "ae", "al", "au"]
 
-def OMNI2(infile: str, names) -> pd.DataFrame:
+def dt2dttime(y, d, hour, minute):
+    dn = (dt.date(int(y), 1, 1) + dt.timedelta(int(d) - 1))
+    return dt.datetime(
+        dn.year, 
+        dn.month, 
+        dn.day, 
+        int(hour), 
+        int(minute)
+        )
+
+def doy2date(df):
+    return dt.date(int(df.year), 1, 1) + dt.timedelta(int(df.doy) - 1)
+
+def set_names():
     
-
-    df = pd.read_csv(infile, 
-                     header = None, 
-                     names = names, 
-                     delim_whitespace = True)
+    format_file =  'database/indices/omni_format.txt' 
+    f = open(format_file).readlines()
     
+    names = {}
+    for i in f:
+        ln = i.split()
         
-    def dt2dttime(y, d, hour, minute):
-        dn = (dt.date(int(y), 1, 1) + dt.timedelta(int(d) - 1))
-        return dt.datetime(
-            dn.year, 
-            dn.month, 
-            dn.day, 
-            int(hour), 
-            int(minute)
-            )
-    
-    out = []
-    for i in range(len(df)):
-        y, d, h, m = tuple(df.iloc[i, slice(0, 4)].values)
-        out.append(dt2dttime(y, d, h, m))
+        try:
+            name =  ln[1].replace('index', '').replace('_', '')
+            names[int(ln[0])] = name.replace('-', '').lower()
+            
+        except:
+            continue
         
-    df.index = out
-              
-    return df[names[4:]]
+    return names
+
+def OMNI2(infile:str, names: list[str]) -> pd.DataFrame:
+    
+
+    df = pd.read_csv(
+        infile, 
+        header = None, 
+        names = names, 
+        delim_whitespace = True
+        )
+    
+    df.index = df.apply(lambda x: doy2date(x), axis = 1)
+    
+    df.replace(99999, np.nan, inplace = True)
+    return df
     
 def main():
-    infile = "database/PlanetaryIndices/omni.txt"
     
-    df = OMNI2(infile)
+    
+    names =  set_names().values()
+    
+    # 
+    
+    # df.to_csv(infile)
+    
+    # print(df)
+    
+names =  set_names().values()
+infile = "database/indices/omni.txt"
+df = OMNI2(infile, names)
 
-    infile = "database/PlanetaryIndices/omni_2012_2015.lst"
-    
-    names =  ["year", "doy", "hour", 
-              "minute", "Bavg", 
-              "BY", "BZ", "Speed", 
-              "Ey", "SymH"]
-    
-    df = OMNI2(infile, names)
-    
-    df.to_csv(infile)
+
+df
