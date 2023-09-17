@@ -36,7 +36,7 @@ columns = [
      'F10.7adj',
      'D']
 
-def _get_kap_f107_ap():
+def GFZ():
     
     kpap = pd.read_csv(
         PYGLOW_PATH +'/kpap/Kp_ap_Ap_SN_F107_since_1932.txt',
@@ -56,8 +56,10 @@ def _get_kap_f107_ap():
     
     
     daily = {
-        'kp': [], 
-        'ap': [],
+        'kp_sum': [], 
+        'ap_mean': [], 
+        'kp_max': [],
+        'ap_max': [], 
         'f107': []
         
         }
@@ -77,12 +79,14 @@ def _get_kap_f107_ap():
             
         daily_index.append(dt.datetime(year, month, day))
         
-        daily['kp'].append(np.sum(vals[7:15]))
-        daily['ap'].append(np.mean(vals[15:23]))
+        daily['kp_sum'].append(np.sum(vals[7:15]))
+        daily['ap_mean'].append(np.mean(vals[15:23]))
+        daily['kp_max'].append(np.max(vals[7:15]))
+        daily['ap_max'].append(np.max(vals[15:23]))
         daily['f107'].append(vals[26])
            
     df_dialy = pd.DataFrame(daily, index = daily_index)
-    df_hourly = pd.DataFrame(hourly, index = hourly_index)
+    #df_hourly = pd.DataFrame(hourly, index = hourly_index)
         
     df_dialy['f107'] = df_dialy['f107'].replace(
         (-1, 0), (np.nan, np.nan)
@@ -91,7 +95,7 @@ def _get_kap_f107_ap():
     df_dialy['f107a'] = df_dialy['f107'].rolling(
         window = 81).mean()
     
-    return df_dialy, df_hourly
+    return df_dialy#, df_hourly
 
 
 def get_kap():
@@ -222,114 +226,4 @@ def get_ae():
             
     return ae
     
-# kp= get_ae()
 
-
-
-
-
-kp, daily_kp, ap, daily_ap, f107, f107a = get_kap()
-
-ae = get_ae()
-dst = get_dst()
-END_YEAR = dt.date.today().year + 1
-EPOCH = dt.datetime(1932, 1, 1)
-
-end_day = dt.datetime.today()
-total_days = (end_day - EPOCH).days + 1
-
-
-total_days = len(kp.keys())
-geophysical_indices = np.zeros((68, total_days))*float('nan')
-
-
-for j in range(total_days - 1):
-    for i, hour in enumerate(range(0, 24, 3)):
-    
-        dn = EPOCH + dt.timedelta(j) 
-        try:
-            geophysical_indices[i, j] = kp[
-                dt.datetime(dn.year, dn.month, dn.day, hour)
-                ]
-            geophysical_indices[i + 8, j] = ap[
-                dt.datetime(dn.year, dn.month, dn.day, hour)
-                ]
-            
-            geophysical_indices[18, j] = daily_kp[
-                dt.datetime(dn.year, dn.month, dn.day)
-                ]
-            geophysical_indices[19, j] = daily_ap[
-                dt.datetime(dn.year, dn.month, dn.day)
-                ]
-        except KeyError:
-            pass
-        
-        try:  # This will fail if no f10.7 data are available on this day
-            geophysical_indices[16, j] = f107[
-                dt.datetime(dn.year, dn.month, dn.day)
-                ]
-            geophysical_indices[17, j] =  f107a[
-                dt.datetime(dn.year, dn.month, dn.day)
-                ]
-        except KeyError:
-            pass
-
-        try:  # This will fail if no dst data are available on this day
-            geophysical_indices[20:44, j] = dst[dn]
-        except KeyError:
-            pass
-
-        try:  # This will fail if no ae data are available on this day
-            geophysical_indices[44:68, j] = ae[dn]
-        except KeyError:
-            pass
-        
-def get_mtime_table():
-    """
-
-    """
-    mtime_table = {}
-
-    # kpap files:
-    for y in range(1932, END_YEAR):
-        fn = PYGLOW_PATH + "/kpap/%4i" % y
-        if os.path.isfile(fn):
-            mtime_table[fn] = os.path.getmtime(fn)
-
-    # dst files:
-    oldies = ['1957_1969', '1970_1989', '1990_2004']
-    dst_path = '%s/dst/' % PYGLOW_PATH
-    files = glob.glob('%s??????' % dst_path)  # files like 201407
-    old_files = [
-        '%s%s' % (dst_path, old) for old in oldies
-    ]  # older files listed above
-    files.extend(old_files)  # a list of every dst file
-    for fn in files:
-        mtime_table[fn] = os.path.getmtime(fn)
-
-    # ae files:
-    ae_path = '%s/ae/' % PYGLOW_PATH
-    files = glob.glob('%s*' % ae_path)  # find files like 1975
-    for fn in files:
-        mtime_table[fn] = os.path.getmtime(fn)
-
-    return mtime_table
-
-# File to store table of index file modification times:
-# MTIME_TABLE_FNAME = os.path.join(PYGLOW_PATH, 'mtime_table.pkl')
-
-# # File to store cached geophysical_indices array:
-# GEOPHYSICAL_INDICES_FNAME = os.path.join(
-#     PYGLOW_PATH,
-#     'geophysical_indices.npy',
-# )
-# # from pickle import load, dump
-
-# # with open(MTIME_TABLE_FNAME, 'wb') as fid:
-# #     mtime_table = load(fid)
-# #     dump(mtime_table, fid, -1)
-# print("[generate_kpap.py] Generated: {}".format(GEOPHYSICAL_INDICES_FNAME))
-
-# np.save(GEOPHYSICAL_INDICES_FNAME, geophysical_indices)
-
-# geophysical_indices

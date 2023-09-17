@@ -29,23 +29,17 @@ def process_kyoto_data(infile):
     
     return df
 
-infile = "database/PlanetaryIndices/kyoto2013_03.txt"
+infile = "database/indices/kyoto2000.txt"
 
 
-
-
-def process_IAGA2002(infile):
-    df = pd.read_csv(infile, header = 14, delim_whitespace=True)
+def process(infile):
+    try:
     
-    df.index = pd.to_datetime(
-        df["DATE"] + " " + df["TIME"]
-        )
+        ds = process_kyoto_data(infile)
+        
+        ds.to_csv(infile)
+        
+    except:
+        print('file already convert')
+        pass
     
-    df = df.drop(columns = ["DATE", "TIME", "DOY", "|"])
-    
-    
-    df.to_csv(infile)
-    
-df = pd.read_csv(infile, header = 14, delim_whitespace=True)
-
-df

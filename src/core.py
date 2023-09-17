@@ -100,6 +100,7 @@ class get_indices(object):
         return self.ts[parameter].item()
     
 def hourly_kp_from_postdam():
+    
     infile = "database/PlanetaryIndices/postdam.txt"
     
     df = postdam(infile)
@@ -109,7 +110,8 @@ def hourly_kp_from_postdam():
     for dn in df.index:
         hrs = pd.date_range(dn, periods = 8, freq = "3H")
         for i in range(len(hrs)):
-            out.append(df.loc[dn, f'Kp{i + 1}'])
+            out.append(df.loc[
+                dn, f'Kp{i + 1}'])
             index.append(hrs[i])
             
             
@@ -151,12 +153,7 @@ def repeat_values_in_data(df):
     return pd.concat(out)
     
 
-def sel_dates(df):
 
-    start = dt.datetime(2013, 1, 1)
-    end = dt.datetime(2013, 12, 31)
-    
-    df = df[(df.index >= start) & (df.index <= end)]
 
 
 def save_only(df):
@@ -167,7 +164,8 @@ def save_only(df):
     
    
     df[['F10.7adj', 'kp', 
-        'Ap', 'F10.7a']].to_csv('database/PlanetaryIndices/kp_postdam.txt')
+        'Ap', 'F10.7a']].to_csv(
+            'database/PlanetaryIndices/kp_postdam.txt')
     # dialy = gd.GFZ()
 
     # dialy.to_csv('database/indices/indeces.txt')

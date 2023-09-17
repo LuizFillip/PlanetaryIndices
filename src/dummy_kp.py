@@ -51,7 +51,8 @@ def cubic_interp1d(x0, x, y):
 
     for i in range(1, size-1, 1):
         Li_1[i] = xdiff[i-1] / Li[i-1]
-        Li[i] = (2*(xdiff[i-1]+xdiff[i]) - Li_1[i-1] * Li_1[i-1])**.5
+        Li[i] = (2*(xdiff[i-1] + xdiff[i]) - 
+                 Li_1[i-1] * Li_1[i-1])**.5
         Bi = 6*(ydiff[i]/xdiff[i] - ydiff[i-1]/xdiff[i-1])
         z[i] = (Bi - Li_1[i-1]*z[i-1])/Li[i]
 
