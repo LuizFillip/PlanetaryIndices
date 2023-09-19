@@ -35,7 +35,10 @@ def set_names(
         
     return names
 
-def OMNI2(infile:str, names: list[str]) -> pd.DataFrame:
+def OMNI2(
+        infile:str, 
+        names: list[str]
+        ) -> pd.DataFrame:
     
 
     df = pd.read_csv(
@@ -47,7 +50,26 @@ def OMNI2(infile:str, names: list[str]) -> pd.DataFrame:
     
     df.index = df.apply(lambda x: doy2date(x), axis = 1)
     
-    df.replace((99999, 9999), np.nan, inplace = True)
+    df.replace((99999, 9999, 999.9), 
+               np.nan, inplace = True)
+    
+    df.rename(
+        columns = {'f10.7': 'f107'}, 
+        inplace = True
+        )
+
+    df["f107a"] = df["f107"].rolling(window = 81).mean()
+
+    df = df.interpolate()
+    
+    df['kp'] = df['kp'] / 9
+    
+    cols = [s.replace(',', '') for s in df.columns]
+    
+    df.columns =  cols
+    
+    del df['hour']
+
     return df
     
 
@@ -67,8 +89,6 @@ def process(infile):
         print('file already convert')
         pass
     
-
-# process(infile)
 
 
 def refix_parameters(df): 
