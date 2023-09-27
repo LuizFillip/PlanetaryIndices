@@ -2,6 +2,7 @@ import pandas as pd
 import datetime as dt
 import numpy as np 
 
+INDEX_PATH = 'database/indices/omni.txt'
 
 def dt2dttime(y, d, hour, minute):
     dn = (dt.date(int(y), 1, 1) + dt.timedelta(int(d) - 1))
@@ -14,7 +15,8 @@ def dt2dttime(y, d, hour, minute):
         )
 
 def doy2date(df):
-    return dt.date(int(df.year), 1, 1) + dt.timedelta(int(df.doy) - 1)
+    return (dt.date(int(df.year), 1, 1) + 
+            dt.timedelta(int(df.doy) - 1))
 
 def set_names(
         format_file =  'database/indices/omni_format.txt'
@@ -40,7 +42,10 @@ def OMNI2(
         names: list[str]
         ) -> pd.DataFrame:
     
-
+    """
+    
+    See: https://omniweb.gsfc.nasa.gov/form/dx1.html
+    """
     df = pd.read_csv(
         infile, 
         header = None, 
@@ -90,17 +95,4 @@ def process(infile):
         pass
     
 
-
-def refix_parameters(df): 
-
-
-    df['f10.7'].replace(999.9, np.nan, 
-               inplace = True)
-    
-    df['kp'] = df['kp']/9
-    
-    cols = [s.replace(',', '') for s in df.columns]
-    
-    df.columns =  cols
-    
-    del df['hour']
+# process(infile)
