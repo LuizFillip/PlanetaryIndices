@@ -71,9 +71,11 @@ def postdam(infile: str):
                      delim_whitespace = True)
     
     
-    df.index  = pd.to_datetime(dict(year = df['#YYY'], 
-                                    month = df['MM'], 
-                                    day = df['DD']))
+    df.index  = pd.to_datetime(
+        dict(year = df['#YYY'], 
+            month = df['MM'], 
+            day = df['DD'])
+        )
     
     df = df.drop(
         columns = ["#YYY", "MM", "DD", 

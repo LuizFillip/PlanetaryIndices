@@ -24,8 +24,10 @@ def process_kyoto_data(infile):
     
     df["dst"] = pd.to_numeric(df["dst"])
     
-    df.drop(columns = ["date", "time", "doy"], 
-            inplace = True)
+    df.drop(
+        columns = ["date", "time", "doy"], 
+        inplace = True
+        )
     
     return df
 

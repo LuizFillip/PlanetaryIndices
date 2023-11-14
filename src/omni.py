@@ -3,8 +3,9 @@ import datetime as dt
 import numpy as np 
 import base as b 
 
-
-INDEX_PATH = 'database/indices/omni_hourly.txt'
+INDEX_DY = 'database/indices/omni.txt'
+INDEX_DY2 = 'database/indices/omni_pro.txt'
+INDEX_HR = 'database/indices/omni_hourly.txt'
 FORMAT_PATH = 'database/indices/omni_format_hourly.txt'
 
 
@@ -19,8 +20,10 @@ def dt2dttime(y, d, hour):
         )
 
 def doy2date(df):
-    return (dt.date(int(df.year), 1, 1) + 
-            dt.timedelta(int(df.doy) - 1))
+    return (
+        dt.date(int(df.year), 1, 1) + 
+        dt.timedelta(int(df.doy) - 1)
+        )
 
 def set_names():
 
@@ -32,6 +35,7 @@ def set_names():
         
         try:
             name =  ln[1].replace('index', '').replace('_', '')
+            
             names[int(ln[0])] = name.replace('-', '').lower()
             
         except:
@@ -79,11 +83,17 @@ def OMNI2(
     
     df.columns =  cols
         
-    df.index =  (pd.to_datetime(df['date']) +
-                 pd.to_timedelta(df['hour'], unit='h'))
+    df.index =  (
+        pd.to_datetime(df['date']) +
+        pd.to_timedelta(df['hour'], 
+        unit='h')
+        )
     
     df.drop(
-        columns = ['year', 'doy', 'hour', 'date'], 
+        columns = [
+            'year', 'doy',
+            'hour', 'date'
+            ], 
         inplace = True
         )
     return df
@@ -101,10 +111,21 @@ def process(infile):
         pass
     
 
-# process(INDEX_PATH )
 
-
-# names = set_names().values()
-# ds = OMNI2(INDEX_PATH, names)
-
-# ds
+def process_omni(INDEX_PATH):
+    df = b.load(INDEX_PATH)
+    
+    out = []
+    
+    for col in df.columns:
+        
+        a = df.groupby(df.index.date)[col]
+        
+        if col == 'dst':
+            out.append(a.min())
+        else:
+            out.append(a.max())
+    
+    ds = pd.concat(out, axis = 1)
+    
+    ds.to_csv('database/indices/omni_pro.txt')
