@@ -31,17 +31,4 @@ def process_kyoto_data(infile):
     
     return df
 
-infile = "database/indices/kyoto2000.txt"
-
-
-def process(infile):
-    try:
-    
-        ds = process_kyoto_data(infile)
-        
-        ds.to_csv(infile)
-        
-    except:
-        print('file already convert')
-        pass
     
