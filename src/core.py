@@ -1,6 +1,7 @@
-
 import datetime as dt
 import pandas as pd
+
+POSTDAM_PATH = "database/indices/postdam.txt"
 
 def extract_rows(contents: str):
     result = []
@@ -92,9 +93,9 @@ class get_indices(object):
     
     def __init__(self, date = dt.date(2014, 1, 1)):
         
-        infile = "database/PlanetaryIndices/postdam.txt"
         
-        df = postdam(infile)
+        
+        df = postdam(POSTDAM_PATH)
         
         self.ts = df.loc[df.index.date == date, ]
     

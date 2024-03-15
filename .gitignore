@@ -4,6 +4,7 @@ src/__pycache__/*
 /src/ae/*
 /src/dst/*
 /src/kpap/*
+/src/omni/data/*
 
 /figures/
 *.png

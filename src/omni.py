@@ -3,10 +3,10 @@ import datetime as dt
 import numpy as np 
 import base as b 
 
-INDEX_DY = 'database/indices/omni.txt'
-INDEX_DY2 = 'database/indices/omni_pro.txt'
-INDEX_HR = 'database/indices/omni_hourly.txt'
-FORMAT_PATH = 'database/indices/omni_format_hourly.txt'
+PATH_DATA = 'database/indices/omni.txt'
+PATH_FORMAT = 'database/indices/omni_format.txt'
+# INDEX_HR = 'database/indices/omni_hourly.txt'
+# FORMAT_HR = 'database/indices/omni_format_hourly.txt'
 
 
 def dt2dttime(y, d, hour):
@@ -25,7 +25,7 @@ def doy2date(df):
         dt.timedelta(int(df.doy) - 1)
         )
 
-def set_names():
+def set_names(FORMAT_PATH):
 
     f = open(FORMAT_PATH).readlines()
     
@@ -90,21 +90,18 @@ def OMNI2(
         )
     
     df.drop(
-        columns = [
-            'year', 'doy',
-            'hour', 'date'
-            ], 
+        columns = ['year', 'doy', 'hour', 'date'], 
         inplace = True
         )
     return df
     
 
-def process(infile):
+def process(PATH_DATA, PATH_FORMAT):
     try:
-        names = set_names().values()
-        ds = OMNI2(infile, names)
+        names = set_names(PATH_FORMAT).values()
+        ds = OMNI2(PATH_DATA, names)
         
-        ds.to_csv(infile)
+        ds.to_csv(PATH_DATA)
         
     except:
         print('file already convert')
@@ -129,3 +126,18 @@ def process_omni(INDEX_PATH):
     ds = pd.concat(out, axis = 1)
     
     ds.to_csv('database/indices/omni_pro.txt')
+    
+    
+def try_load(INDEX_HR):
+    return b.load(INDEX_HR)
+
+# try_load()
+
+# process(INDEX_HR, FORMAT_HR)
+
+# df = b.load(PATH_DATA)
+
+# df = df.loc[df.index.year == 2023]
+
+
+# df['kp'].plot() 
