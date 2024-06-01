@@ -5,8 +5,8 @@ import base as b
 
 PATH_DATA = 'database/indices/omni.txt'
 PATH_FORMAT = 'database/indices/omni_format.txt'
-# INDEX_HR = 'database/indices/omni_hourly.txt'
-# FORMAT_HR = 'database/indices/omni_format_hourly.txt'
+INDEX_HR = 'database/indices/omni_hourly.txt'
+FORMAT_HR = 'database/indices/omni_format_hourly.txt'
 
 
 def dt2dttime(y, d, hour):
@@ -125,19 +125,17 @@ def process_omni(INDEX_PATH):
     
     ds = pd.concat(out, axis = 1)
     
-    ds.to_csv('database/indices/omni_pro.txt')
+    ds.to_csv('database/indices/omni_pro2.txt')
+    
+    return ds
     
     
 def try_load(INDEX_HR):
     return b.load(INDEX_HR)
 
-# try_load()
 
-# process(INDEX_HR, FORMAT_HR)
+process(INDEX_HR, FORMAT_HR)
 
-# df = b.load(PATH_DATA)
+df = process_omni(INDEX_HR)
 
-# df = df.loc[df.index.year == 2023]
-
-
-# df['kp'].plot() 
+df
