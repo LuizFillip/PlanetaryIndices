@@ -9,21 +9,28 @@ INDEX_HR = 'database/indices/omni_hourly.txt'
 FORMAT_HR = 'database/indices/omni_format_hourly.txt'
 
 
-def dt2dttime(y, d, hour):
+def dt2dttime(y, d, hour, minute):
     dn = (dt.date(int(y), 1, 1) + 
           dt.timedelta(int(d) - 1))
     return dt.datetime(
         dn.year, 
         dn.month, 
         dn.day, 
-        int(hour)
+        int(hour), 
+        int(minute)
         )
 
 def doy2date(df):
-    return (
-        dt.date(int(df.year), 1, 1) + 
-        dt.timedelta(int(df.doy) - 1)
+    time = dt.timedelta(
+        hours = int(df.hour), 
+        minutes = int(df.minute)          
         )
+    
+    date = pd.to_datetime((
+        dt.date(int(df.year), 1, 1) + 
+        dt.timedelta(int(df.doy) - 1) 
+        ) )
+    return date + time
 
 def set_names(FORMAT_PATH):
 
@@ -34,7 +41,7 @@ def set_names(FORMAT_PATH):
         ln = i.split()
         
         try:
-            name =  ln[1].replace('index', '').replace('_', '')
+            name =  ln[1].replace('index', '').replace('_', '').replace(',', '')
             
             names[int(ln[0])] = name.replace('-', '').lower()
             
@@ -134,8 +141,51 @@ def try_load(INDEX_HR):
     return b.load(INDEX_HR)
 
 
-process(INDEX_HR, FORMAT_HR)
+# process(INDEX_HR, FORMAT_HR)
 
-df = process_omni(INDEX_HR)
+# df = process_omni(INDEX_HR)
 
-df
+# df
+
+
+def process_high(year):
+    
+    high_path = 'database/indices/high_resolution/'
+
+    path_format = high_path + 'format.txt'
+    names = set_names(path_format).values()
+    
+    infile = f'{high_path}{year}.txt'
+    
+    df = pd.read_csv(
+         infile, 
+         header = None, 
+         names = names, 
+         delim_whitespace = True
+         )
+          
+    df.rename(columns = {'day': 'doy'}, inplace = True)
+    
+    df.index =  df.apply(lambda x: doy2date(x), axis = 1)
+    
+    df.replace(
+        (99999, 9999, 999.9), 
+        np.nan, inplace = True
+        )
+    
+    return df.iloc[:, 4:]
+
+
+
+from tqdm import tqdm 
+
+def run_high_resolution():
+
+    for year in tqdm(range(2013, 2024)):
+        path_to_save = f'database/indices/omni_high/{year}'
+        
+        process_high(year).to_csv(path_to_save)
+        
+        
+# run_high_resolution()
+
