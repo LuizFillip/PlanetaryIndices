@@ -5,6 +5,7 @@ src/__pycache__/*
 /src/dst/*
 /src/kpap/*
 /src/omni/data/*
+/src/gfz/*.txt
 
 /figures/
 *.png
