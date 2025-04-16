@@ -123,13 +123,17 @@ def get_kap():
         
         year, month, day = tuple(int(x) for x in vals[:3])
         
+        dn = dt.datetime(year, month, day)
+        
         for i, hour in enumerate(range(0, 24, 3)):
+            
+            delta = dt.timedelta(hours = hour)
+            kp[dn + delta] = vals[7 + i]
+            ae[dn + delta] = vals[15 + i]
         
-            kp[dt.datetime(year, month, day, hour)] = vals[7 + i]
-            ae[dt.datetime(year, month, day, hour)] = vals[15 + i]
-        
-        daily_kp[dt.datetime(year, month, day)] = np.sum(vals[7:15])
-        daily_ae[dt.datetime(year, month, day)] = np.mean(vals[15:23])
+        daily_kp[dn] = np.sum(vals[7:15])
+        daily_ae[dn] = np.mean(vals[15:23]
+                                                     )
         
         try:
             temp = float(vals[26])  # f107

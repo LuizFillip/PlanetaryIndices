@@ -141,12 +141,6 @@ def try_load(INDEX_HR):
     return b.load(INDEX_HR)
 
 
-# process(INDEX_HR, FORMAT_HR)
-
-# df = process_omni(INDEX_HR)
-
-# df
-
 
 def process_high(year):
     
