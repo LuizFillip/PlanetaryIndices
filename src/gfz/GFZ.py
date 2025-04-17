@@ -70,5 +70,8 @@ class GFZ(object):
     def get(self, parameter):
         return self.ts[parameter].item()
     
-
-vls = GFZ().get('F10.7a')
+def main():
+    
+    vls = GFZ().get('F10.7a')
+    
+    print(vls)
