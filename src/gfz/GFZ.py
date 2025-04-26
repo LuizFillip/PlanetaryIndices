@@ -63,10 +63,11 @@ class GFZ(object):
 
         df["F10.7a"] = df["F10.7obs"].rolling(window = 81).mean()
 
-        df = df.loc[df["D"] == 2] 
+        # df = df.loc[df["D"] == 2] 
         
-        self.ts = df.loc[df.index.date == date, ]
+        self.ts = df.loc[df.index.date == date.date(), ]
         self.df = df
+        
     def get(self, parameter):
         return self.ts[parameter].item()
     
