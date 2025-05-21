@@ -3,11 +3,11 @@ import datetime as dt
 import numpy as np 
 import base as b 
 
+from tqdm import tqdm 
 PATH_DATA = 'database/indices/omni.txt'
 PATH_FORMAT = 'database/indices/omni_format.txt'
 INDEX_HR = 'database/indices/omni_hourly.txt'
 FORMAT_HR = 'database/indices/omni_format_hourly.txt'
-
 
 def dt2dttime(y, d, hour, minute):
     dn = (dt.date(int(y), 1, 1) + 
@@ -137,22 +137,13 @@ def process_omni(INDEX_PATH):
     return ds
     
     
-def try_load(INDEX_HR):
-    return b.load(INDEX_HR)
 
+def HighOmni(data_file, format_file):
 
-
-def process_high(year):
-    
-    high_path = 'database/indices/high_resolution/'
-
-    path_format = high_path + 'format.txt'
-    names = set_names(path_format).values()
-    
-    infile = f'{high_path}{year}.txt'
+    names = set_names(format_file).values()
     
     df = pd.read_csv(
-         infile, 
+         data_file, 
          header = None, 
          names = names, 
          delim_whitespace = True
@@ -171,15 +162,20 @@ def process_high(year):
 
 
 
-from tqdm import tqdm 
 
 def run_high_resolution():
 
-    for year in tqdm(range(2013, 2024)):
-        path_to_save = f'database/indices/omni_high/{year}'
-        
-        process_high(year).to_csv(path_to_save)
+    # for year in tqdm(range(2013, 2024)):
+    year = 2015
+    path_to_save = f'database/indices/omni_high/{year}1'
+    
+    HighOmni(year).to_csv(path_to_save)
         
         
 # run_high_resolution()
 
+
+data_file = 'indices/src/omni/data/Asama2004.txt'
+format_file = 'indices/src/omni/data/Asama2004_format.txt'
+
+HighOmni(data_file, format_file)
